@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>PahariPath Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Outfit',sans-serif;background:#f0f2f0;color:#1c2420;min-height:100vh}
+:root{--pine:#1a3d2b;--moss:#2d5a40;--sage:#4a7c5f;--stone:#6b7c6e;--cream:#faf9f6;--clay:#c4704a;--red:#c0392b;--green:#1e6b3c}
+
+/* LOGIN */
+.login-wrap{position:fixed;inset:0;background:var(--pine);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .35s}
+.login-wrap.gone{opacity:0;pointer-events:none}
+.login-card{background:#fff;border-radius:20px;padding:44px 38px;width:380px;text-align:center}
+.login-icon{font-size:40px;margin-bottom:14px}
+.login-title{font-size:22px;font-weight:600;color:var(--pine);margin-bottom:6px}
+.login-sub{font-size:13px;color:var(--stone);margin-bottom:28px}
+.lbl{display:block;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--stone);margin-bottom:6px}
+.inp{width:100%;padding:12px 14px;border:1.5px solid #ddd;border-radius:9px;font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border-color .2s;margin-bottom:14px}
+.inp:focus{border-color:var(--sage)}
+.login-btn{width:100%;padding:13px;background:var(--pine);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif}
+.login-btn:hover{background:var(--moss)}
+.login-err{color:var(--red);font-size:13px;margin-top:10px;display:none}
+.login-hint{font-size:12px;color:var(--stone);margin-top:18px;opacity:.7;line-height:1.6}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+.sidebar{background:var(--pine);display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.sb-logo{padding:24px 20px 18px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-logo-title{font-size:17px;font-weight:600;color:#fff}
+.sb-logo-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px}
+.sb-nav{flex:1;padding:14px 10px;overflow-y:auto}
+.sb-group{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);padding:10px 12px 5px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;cursor:pointer;margin-bottom:2px;color:rgba(255,255,255,.65);font-size:13px;transition:background .15s}
+.sb-item:hover{background:rgba(255,255,255,.1);color:#fff}
+.sb-item.on{background:rgba(255,255,255,.15);color:#fff;font-weight:500}
+.sb-foot{padding:14px 18px;border-top:1px solid rgba(255,255,255,.1)}
+.sb-foot-txt{font-size:12px;color:rgba(255,255,255,.3)}
+.sb-logout{margin-top:8px;width:100%;padding:8px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:8px;font-size:12px;cursor:pointer;font-family:'Outfit',sans-serif}
+.sb-logout:hover{background:rgba(255,255,255,.14)}
+
+/* MAIN */
+.main{padding:28px 32px;overflow-y:auto}
+.page{display:none}
+.page.on{display:block}
+.ph{margin-bottom:24px}
+.ph-title{font-size:24px;font-weight:600;color:var(--pine)}
+.ph-sub{font-size:13px;color:var(--stone);margin-top:4px}
+
+/* PREVIEW BAR */
+.preview-bar{background:var(--pine);color:#fff;padding:12px 18px;border-radius:12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;text-decoration:none}
+.preview-bar:hover{background:var(--moss)}
+.pb-text{font-size:13px}
+.pb-link{font-size:12px;color:rgba(255,255,255,.6)}
+.pb-btn{background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif}
+
+/* PANELS */
+.panel{background:#fff;border:1px solid rgba(74,124,95,.1);border-radius:14px;padding:22px;margin-bottom:18px}
+.panel-title{font-size:14px;font-weight:600;color:#1c2420;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+/* FORMS */
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--stone);margin-bottom:6px}
+.fi,.fs,.ft{width:100%;padding:10px 13px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;color:#1c2420;outline:none;transition:border-color .2s}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--sage)}
+.ft{min-height:76px;resize:vertical}
+.fhint{font-size:11px;color:var(--stone);margin-top:4px;line-height:1.5}
+.range-wrap{display:flex;align-items:center;gap:10px}
+.range-wrap input[type=range]{flex:1;accent-color:var(--pine)}
+.range-val{font-size:14px;font-weight:600;color:var(--pine);min-width:38px}
+
+/* BUTTONS */
+.btn{padding:9px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif;border:none;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+.btn-primary{background:var(--pine);color:#fff}.btn-primary:hover{background:var(--moss)}
+.btn-outline{background:transparent;color:var(--stone);border:1.5px solid #ddd}.btn-outline:hover{border-color:var(--sage);color:var(--pine)}
+.btn-danger{background:#fdeaea;color:var(--red);border:1px solid #f0b8b8}.btn-danger:hover{background:#fce0e0}
+.btn-edit{background:#e8f0eb;color:var(--pine);border:1px solid rgba(74,124,95,.2)}.btn-edit:hover{background:#d4e8da}
+.btn-sm{padding:6px 12px;font-size:12px}
+.add-trigger{width:100%;padding:11px;border:1.5px dashed rgba(74,124,95,.3);border-radius:9px;background:transparent;color:var(--sage);font-size:13px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif;margin-top:10px;transition:all .2s}
+.add-trigger:hover{border-color:var(--sage);background:#f5faf6}
+
+/* ITEM CARDS */
+.item-list{display:flex;flex-direction:column;gap:8px}
+.item-card{border:1px solid rgba(74,124,95,.12);border-radius:11px;padding:14px 16px;background:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.item-card:hover{border-color:rgba(74,124,95,.28)}
+.ic-emoji{font-size:24px;flex-shrink:0}
+.ic-info{flex:1;min-width:0}
+.ic-name{font-size:14px;font-weight:500;color:#1c2420}
+.ic-sub{font-size:12px;color:var(--stone);margin-top:2px}
+.ic-media{font-size:11px;color:var(--sage);margin-top:3px}
+.ic-actions{display:flex;gap:6px;flex-wrap:wrap}
+.badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px}
+.badge-low{background:#e6f4ec;color:#1e6b3c}
+.badge-med{background:#fef3e2;color:#9b6c1a}
+.badge-high{background:#fdeaea;color:#9b2020}
+
+/* ADD FORM */
+.add-form{background:#f8faf8;border:1.5px dashed rgba(74,124,95,.22);border-radius:12px;padding:18px;margin-top:10px;display:none}
+.add-form.open{display:block}
+.add-form-title{font-size:14px;font-weight:600;color:var(--pine);margin-bottom:14px}
+
+/* MEDIA PANEL */
+.media-panel{display:none;background:#f0f6f2;border:1.5px solid rgba(74,124,95,.2);border-radius:12px;padding:18px;margin-top:8px;width:100%}
+.media-panel.open{display:block}
+.mp-title{font-size:13px;font-weight:600;color:var(--pine);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.mp-section{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--stone);margin-bottom:8px;margin-top:14px}
+.mp-section:first-of-type{margin-top:0}
+.media-item{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #eee;border-radius:8px;padding:8px 10px;margin-bottom:6px}
+.media-thumb{width:48px;height:36px;object-fit:cover;border-radius:5px;flex-shrink:0}
+.media-url{flex:1;font-size:12px;color:var(--stone);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.media-add-row{display:flex;gap:8px;margin-top:6px}
+.media-add-row .fi{flex:1;font-size:12px;padding:9px 12px}
+
+/* CROWD UPDATE */
+.crowd-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.crowd-card{background:#fff;border:1px solid rgba(74,124,95,.12);border-radius:12px;padding:16px}
+.cc-name{font-size:14px;font-weight:500;color:#1c2420;margin-bottom:2px}
+.cc-dist{font-size:12px;color:var(--stone);margin-bottom:12px}
+.cc-bar-bg{height:7px;background:#eee;border-radius:4px;overflow:hidden;margin-bottom:6px}
+.cc-bar-fill{height:100%;border-radius:4px;transition:width .4s}
+.bar-low{background:linear-gradient(90deg,#3aab66,#52c97e)}
+.bar-med{background:linear-gradient(90deg,#e8a020,#f0b830)}
+.bar-high{background:linear-gradient(90deg,#e24a4a,#f06060)}
+
+/* STATS GRID */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat-card{background:#fff;border:1px solid rgba(74,124,95,.1);border-radius:12px;padding:18px;text-align:center}
+.sc-num{font-size:26px;font-weight:600;color:var(--pine)}
+.sc-lbl{font-size:12px;color:var(--stone);margin-top:3px}
+
+/* COLORS */
+.color-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:5px}
+.cswatch{width:30px;height:30px;border-radius:7px;cursor:pointer;border:2px solid transparent;position:relative;transition:border-color .15s}
+.cswatch.on{border-color:#1c2420}
+.cswatch.on::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff}
+
+/* SUCCESS */
+.success{background:#e6f4ec;color:var(--green);border:1px solid #b8dfc8;border-radius:9px;padding:11px 15px;font-size:13px;margin-bottom:14px;display:none;align-items:center;gap:8px}
+.success.show{display:flex}
+
+/* MISC */
+code{background:#f0f0f0;padding:2px 6px;border-radius:4px;font-size:12px}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.sidebar{position:fixed;bottom:0;top:auto;height:60px;flex-direction:row;width:100%;z-index:50}.sb-logo,.sb-foot{display:none}.sb-nav{display:flex;padding:6px}.sb-group{display:none}.sb-item{flex-direction:column;font-size:10px;padding:6px 8px;gap:3px}.main{padding:16px;padding-bottom:72px}.crowd-grid,.stats-grid,.row2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-card">
+    <div class="login-icon">⛰</div>
+    <div class="login-title">PahariPath Admin</div>
+    <div class="login-sub">Enter password to manage your website</div>
+    <label class="lbl">Password</label>
+    <input type="password" class="inp" id="pwInput" placeholder="Enter admin password"/>
+    <button class="login-btn" id="loginBtn">Sign In →</button>
+    <div class="login-err" id="loginErr">❌ Wrong password. Try again.</div>
+    <div class="login-hint">Default password: <strong>paharipath2025</strong><br>Change it in Settings after login.</div>
+  </div>
+</div>
+
+<!-- ADMIN LAYOUT -->
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-title">⛰ PahariPath</div>
+      <div class="sb-logo-sub">Admin Dashboard</div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-group">Manage</div>
+      <div class="sb-item on" id="nav-dashboard" onclick="goTo('dashboard')"><span>📊</span>Dashboard</div>
+      <div class="sb-item" id="nav-crowd" onclick="goTo('crowd')"><span>🔴</span>Crowd Data</div>
+      <div class="sb-item" id="nav-places" onclick="goTo('places')"><span>🏔</span>Places & Media</div>
+      <div class="sb-item" id="nav-stays" onclick="goTo('stays')"><span>🏡</span>Stays</div>
+      <div class="sb-item" id="nav-alternatives" onclick="goTo('alternatives')"><span>🔀</span>Alternatives</div>
+      <div class="sb-group">Site</div>
+      <div class="sb-item" id="nav-content" onclick="goTo('content')"><span>✏️</span>Text & Content</div>
+      <div class="sb-item" id="nav-settings" onclick="goTo('settings')"><span>⚙️</span>Settings</div>
+    </nav>
+    <div class="sb-foot">
+      <div class="sb-foot-txt">Logged in as Admin</div>
+      <button class="sb-logout" onclick="logout()">Sign Out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <a href="index.html" target="_blank" class="preview-bar">
+      <div><div class="pb-text">🌐 View live website</div><div class="pb-link">index.html — opens in new tab</div></div>
+      <span class="pb-btn">Preview →</span>
+    </a>
+
+    <!-- DASHBOARD -->
+    <div class="page on" id="page-dashboard">
+      <div class="ph"><div class="ph-title">Dashboard</div><div class="ph-sub">Overview of PahariPath</div></div>
+      <div class="stats-grid" id="dash-stats"></div>
+      <div class="panel">
+        <div class="panel-title">⚡ Quick Actions</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="goTo('crowd')">Update Crowd</button>
+          <button class="btn btn-outline" onclick="goTo('places')">Add Place / Media</button>
+          <button class="btn btn-outline" onclick="goTo('stays')">Add Stay</button>
+          <button class="btn btn-outline" onclick="goTo('content')">Edit Text</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">🏔 Places (latest)</div>
+        <div id="dash-places"></div>
+      </div>
+    </div>
+
+    <!-- CROWD -->
+    <div class="page" id="page-crowd">
+      <div class="ph"><div class="ph-title">Crowd Data</div><div class="ph-sub">Update crowd % per place — shows live on the website</div></div>
+      <div class="success" id="crowd-ok">✅ Crowd data saved!</div>
+      <div class="panel">
+        <div class="panel-title">🔴 Set crowd levels</div>
+        <p style="font-size:13px;color:var(--stone);margin-bottom:18px">Drag sliders. 0 = empty, 100 = fully packed. Save when done.</p>
+        <div class="crowd-grid" id="crowd-grid"></div>
+        <div style="margin-top:18px;display:flex;gap:8px">
+          <button class="btn btn-primary" onclick="saveCrowd()">💾 Save All</button>
+          <button class="btn btn-outline" onclick="buildCrowd()">↺ Reset</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">💡 Where to get crowd numbers</div>
+        <div style="font-size:13px;color:var(--stone);line-height:1.9">
+          <p><strong style="color:#1c2420">Google Maps:</strong> Search place → scroll to "Popular times" → read % for current hour</p>
+          <p><strong style="color:#1c2420">Your local contacts:</strong> WhatsApp them "bheed 1-10?" → multiply by 10 = your %</p>
+          <p><strong style="color:#1c2420">Instagram:</strong> Check recent posts for that location tag — lots of posts = high crowd</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLACES & MEDIA -->
+    <div class="page" id="page-places">
+      <div class="ph"><div class="ph-title">Places & Media</div><div class="ph-sub">Add places, upload photos and YouTube videos per place</div></div>
+      <div class="success" id="places-ok">✅ Saved!</div>
+      <div class="panel">
+        <div class="panel-title">🏔 All Places — click 📷 to add photos/videos</div>
+        <div class="item-list" id="places-list"></div>
+        <button class="add-trigger" onclick="tog('add-place-form')">+ Add New Place</button>
+        <div class="add-form" id="add-place-form">
+          <div class="add-form-title">Add New Place</div>
+          <div class="row2">
+            <div class="fg"><label>Place Name *</label><input class="fi" id="np-name" placeholder="e.g. Jibhi"/></div>
+            <div class="fg"><label>District *</label><input class="fi" id="np-dist" placeholder="e.g. Kullu"/></div>
+          </div>
+          <div class="fg"><label>Description *</label><textarea class="ft" id="np-desc" placeholder="What makes this place special..."></textarea></div>
+          <div class="row2">
+            <div class="fg"><label>Emoji</label><input class="fi" id="np-emoji" placeholder="🏔️" style="font-size:20px"/></div>
+            <div class="fg"><label>Best Time to Visit</label><input class="fi" id="np-best" placeholder="Oct–Nov, Mar–Apr"/></div>
+          </div>
+          <div class="row2">
+            <div class="fg"><label>Altitude</label><input class="fi" id="np-alt" placeholder="1800m"/></div>
+            <div class="fg"><label>Famous For</label><input class="fi" id="np-famous" placeholder="Trekking, river, forest"/></div>
+          </div>
+          <div class="fg">
+            <label>Crowd Level: <span id="np-cv">40</span>%</label>
+            <div class="range-wrap"><input type="range" min="0" max="100" value="40" id="np-crowd" oninput="document.getElementById('np-cv').textContent=this.value"/><span class="range-val" id="np-cv2"></span></div>
+          </div>
+          <div class="fg"><label>Vibes (comma separated)</label><input class="fi" id="np-vibes" placeholder="nature, offbeat, adventure"/></div>
+          <div class="fg">
+            <label>Card Color</label>
+            <div class="color-row" id="place-colors">
+              <div class="cswatch on" style="background:#d4e6da" data-c="#d4e6da" onclick="pickC('place-colors','np-color',this)"></div>
+              <div class="cswatch" style="background:#dde8d4" data-c="#dde8d4" onclick="pickC('place-colors','np-color',this)"></div>
+              <div class="cswatch" style="background:#e8d4c8" data-c="#e8d4c8" onclick="pickC('place-colors','np-color',this)"></div>
+              <div class="cswatch" style="background:#d4dce8" data-c="#d4dce8" onclick="pickC('place-colors','np-color',this)"></div>
+              <div class="cswatch" style="background:#e8e4d4" data-c="#e8e4d4" onclick="pickC('place-colors','np-color',this)"></div>
+              <div class="cswatch" style="background:#d8d4e8" data-c="#d8d4e8" onclick="pickC('place-colors','np-color',this)"></div>
+              <div class="cswatch" style="background:#d5e8d0" data-c="#d5e8d0" onclick="pickC('place-colors','np-color',this)"></div>
+              <div class="cswatch" style="background:#e0d4e8" data-c="#e0d4e8" onclick="pickC('place-colors','np-color',this)"></div>
+            </div>
+            <input type="hidden" id="np-color" value="#d4e6da"/>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-primary" onclick="addPlace()">Add Place</button>
+            <button class="btn btn-outline" onclick="tog('add-place-form')">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAYS -->
+    <div class="page" id="page-stays">
+      <div class="ph"><div class="ph-title">Stays</div><div class="ph-sub">Homestays, guesthouses, hotels — with WhatsApp booking</div></div>
+      <div class="success" id="stays-ok">✅ Stays updated!</div>
+      <div class="panel">
+        <div class="panel-title">🏡 All Stays</div>
+        <div class="item-list" id="stays-list"></div>
+        <button class="add-trigger" onclick="tog('add-stay-form')">+ Add New Stay</button>
+        <div class="add-form" id="add-stay-form">
+          <div class="add-form-title">Add New Stay</div>
+          <div class="fg"><label>Stay Name *</label><input class="fi" id="ns-name" placeholder="e.g. Mountain Echo Homestay"/></div>
+          <div class="row2">
+            <div class="fg"><label>Location *</label><input class="fi" id="ns-loc" placeholder="e.g. Barot, Mandi"/></div>
+            <div class="fg"><label>Type</label>
+              <select class="fs" id="ns-type"><option>Homestay</option><option>Guesthouse</option><option>Hotel</option><option>Eco Stay</option><option>Camping</option><option>Cottage</option></select>
+            </div>
+          </div>
+          <div class="row2">
+            <div class="fg"><label>Price per Night *</label><input class="fi" id="ns-price" placeholder="₹1,200/night"/></div>
+            <div class="fg"><label>Rating</label><input class="fi" id="ns-rating" placeholder="4.8 · 42 reviews"/></div>
+          </div>
+          <div class="fg"><label>WhatsApp Number *</label><input class="fi" id="ns-wa" placeholder="+91 98050 12345"/><div class="fhint">Customers click "Book" → WhatsApp opens with pre-filled message to this number</div></div>
+          <div class="row2">
+            <div class="fg"><label>Emoji</label><input class="fi" id="ns-emoji" placeholder="🏡" style="font-size:20px"/></div>
+            <div class="fg">
+              <label>Card Color</label>
+              <div class="color-row" id="stay-colors">
+                <div class="cswatch on" style="background:#e1f0e8" data-c="#e1f0e8" onclick="pickC('stay-colors','ns-color',this)"></div>
+                <div class="cswatch" style="background:#f0e8d4" data-c="#f0e8d4" onclick="pickC('stay-colors','ns-color',this)"></div>
+                <div class="cswatch" style="background:#e8e0f0" data-c="#e8e0f0" onclick="pickC('stay-colors','ns-color',this)"></div>
+                <div class="cswatch" style="background:#f0dcd4" data-c="#f0dcd4" onclick="pickC('stay-colors','ns-color',this)"></div>
+                <div class="cswatch" style="background:#dce8f0" data-c="#dce8f0" onclick="pickC('stay-colors','ns-color',this)"></div>
+              </div>
+              <input type="hidden" id="ns-color" value="#e1f0e8"/>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-primary" onclick="addStay()">Add Stay</button>
+            <button class="btn btn-outline" onclick="tog('add-stay-form')">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALTERNATIVES -->
+    <div class="page" id="page-alternatives">
+      <div class="ph"><div class="ph-title">Alternatives</div><div class="ph-sub">Suggest quieter alternatives for overcrowded places</div></div>
+      <div class="success" id="alts-ok">✅ Saved!</div>
+      <div class="panel">
+        <div class="panel-title">🔀 All Suggestions</div>
+        <div class="item-list" id="alts-list"></div>
+        <button class="add-trigger" onclick="tog('add-alt-form')">+ Add Suggestion</button>
+        <div class="add-form" id="add-alt-form">
+          <div class="add-form-title">Add Alternative Suggestion</div>
+          <div class="row2">
+            <div class="fg"><label>Instead of (crowded place)</label><input class="fi" id="na-for" placeholder="e.g. Kasol"/></div>
+            <div class="fg"><label>Go to (alternative)</label><input class="fi" id="na-name" placeholder="e.g. Tirthan Valley"/></div>
+          </div>
+          <div class="fg"><label>Why it's better</label><textarea class="ft" id="na-desc" placeholder="Same river vibe, 4x fewer visitors..."></textarea></div>
+          <div class="row2">
+            <div class="fg"><label>Crowd % there</label><input class="fi" id="na-crowd" placeholder="22%"/></div>
+            <div class="fg"><label>Vibe Tag</label><input class="fi" id="na-vibe" placeholder="Offbeat nature"/></div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-primary" onclick="addAlt()">Add</button>
+            <button class="btn btn-outline" onclick="tog('add-alt-form')">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="page" id="page-content">
+      <div class="ph"><div class="ph-title">Text & Content</div><div class="ph-sub">Edit all text shown on the public website</div></div>
+      <div class="success" id="content-ok">✅ Content saved!</div>
+      <div class="panel">
+        <div class="panel-title">🏠 Hero Section</div>
+        <div class="fg"><label>Site Name</label><input class="fi" id="c-name" placeholder="PahariPath"/></div>
+        <div class="fg"><label>Small tag above headline</label><input class="fi" id="c-eyebrow" placeholder="🏔 Discover Hidden Himachal"/></div>
+        <div class="fg"><label>Main Headline</label><input class="fi" id="c-title" placeholder="Go beyond the tourist trail"/></div>
+        <div class="fg"><label>Subtitle</label><textarea class="ft" id="c-sub"></textarea></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">📊 Stats Bar</div>
+        <p style="font-size:13px;color:var(--stone);margin-bottom:12px">Format: <code>Number | Label</code> — one per line</p>
+        <textarea class="ft" id="c-stats" style="min-height:90px;font-family:monospace;font-size:13px"></textarea>
+      </div>
+      <div class="panel">
+        <div class="panel-title">📖 About Section</div>
+        <textarea class="ft" id="c-about" style="min-height:90px"></textarea>
+      </div>
+      <div class="panel">
+        <div class="panel-title">👣 Footer</div>
+        <input class="fi" id="c-footer" placeholder="Promoting offbeat travel..."/>
+      </div>
+      <button class="btn btn-primary" onclick="saveContent()">💾 Save All Content</button>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="ph"><div class="ph-title">Settings</div><div class="ph-sub">Password and data management</div></div>
+      <div class="success" id="settings-ok">✅ Saved!</div>
+      <div class="panel">
+        <div class="panel-title">🔐 Change Password</div>
+        <div class="fg"><label>Current Password</label><input type="password" class="fi" id="s-cur" placeholder="Current password"/></div>
+        <div class="fg"><label>New Password</label><input type="password" class="fi" id="s-new" placeholder="New password (min 8 chars)"/></div>
+        <div class="fg"><label>Confirm New Password</label><input type="password" class="fi" id="s-con" placeholder="Repeat new password"/></div>
+        <button class="btn btn-primary" onclick="changePW()">Update Password</button>
+        <div id="pw-err" style="color:var(--red);font-size:13px;margin-top:8px;display:none"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">🗄 Data Backup</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-outline" onclick="exportD()">📥 Export Backup</button>
+          <button class="btn btn-outline" onclick="document.getElementById('importFile').click()">📤 Import Backup</button>
+          <button class="btn btn-danger" onclick="resetD()">⚠ Reset to Defaults</button>
+        </div>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importD(this)"/>
+      </div>
+      <div class="panel">
+        <div class="panel-title">🚀 How to Deploy</div>
+        <div style="font-size:13px;color:var(--stone);line-height:2">
+          <p><strong style="color:#1c2420">1.</strong> Go to <a href="https://vercel.com" target="_blank" style="color:var(--pine)">vercel.com</a> → sign up free</p>
+          <p><strong style="color:#1c2420">2.</strong> Upload <code>index.html</code> + <code>admin.html</code> to GitHub</p>
+          <p><strong style="color:#1c2420">3.</strong> Vercel → New Project → import from GitHub → Deploy</p>
+          <p><strong style="color:#1c2420">4.</strong> Site live at <code>yoursite.vercel.app</code> in 5 minutes</p>
+          <p><strong style="color:#1c2420">5.</strong> Bookmark <code>yoursite.vercel.app/admin.html</code> — your private door</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════
+const DEF = {
+  siteName:"PahariPath",heroEyebrow:"🏔 Discover Hidden Himachal",
+  heroTitle:"Go beyond the tourist trail",
+  heroSub:"Find peaceful valleys, quiet villages, and real Pahadi experiences. Skip the crowds.",
+  aboutText:"Himachal Pradesh is far more than Manali, Shimla, and Kasol. PahariPath shows you live crowd data, suggests quiet alternatives, and connects you with real local homestays.",
+  footerTagline:"Promoting offbeat travel · Supporting local communities · Preserving Pahari culture",
+  stats:[{num:"20+",label:"Places Listed"},{num:"12",label:"Districts Covered"},{num:"4",label:"Verified Stays"},{num:"4.8★",label:"Avg Rating"}],
+  places:[
+    {id:1,name:"Tirthan Valley",district:"Kullu",desc:"Gateway to GHNP. Crystal river, trout fishing, dense forest and absolute silence.",emoji:"🌿",crowd:22,vibes:["nature","offbeat"],color:"#d4e6da",bestTime:"Oct–Nov, Mar–Apr",altitude:"1600m",famousFor:"GHNP trekking, trout fishing"},
+    {id:2,name:"Kasol",district:"Kullu",desc:"Parvati Valley backpacker hub. Very crowded May–Sep. Best Oct–Nov.",emoji:"🏔️",crowd:88,vibes:["adventure","nature"],color:"#e8d4c8",bestTime:"Oct–Nov",altitude:"1640m",famousFor:"Parvati river, trekking base"},
+    {id:3,name:"Jibhi",district:"Kullu",desc:"Tiny village in Banjar Valley. Traditional wooden houses, waterfall, pine forest.",emoji:"🌲",crowd:28,vibes:["offbeat","nature","culture"],color:"#d5e8d0",bestTime:"Mar–Jun, Sep–Nov",altitude:"1680m",famousFor:"Wooden architecture, Jalori Pass"},
+    {id:4,name:"Manali",district:"Kullu",desc:"Most visited HP town. Iconic but chaotic Jun–Aug. Come March or October.",emoji:"🏔️",crowd:92,vibes:["adventure","nature","culture"],color:"#e0d4e8",bestTime:"Mar, Oct–Nov",altitude:"2050m",famousFor:"Rohtang Pass, Solang Valley"},
+    {id:5,name:"Malana",district:"Kullu",desc:"Isolated village with its own culture and governance. Don't touch the walls.",emoji:"🏘️",crowd:31,vibes:["offbeat","culture","adventure"],color:"#e4dcc8",bestTime:"May–Jun, Sep–Oct",altitude:"2652m",famousFor:"Ancient self-governance, unique culture"},
+    {id:6,name:"Prashar Lake",district:"Mandi",desc:"Glacial lake at 2730m with floating island and 14th-century pagoda temple.",emoji:"🌊",crowd:44,vibes:["spiritual","nature"],color:"#d4dce8",bestTime:"Jun–Jul, Sep",altitude:"2730m",famousFor:"Floating island, pagoda temple"},
+    {id:7,name:"Barot",district:"Mandi",desc:"Quiet Uhl valley with pine forests and trout streams. Zero tourist buses.",emoji:"🏕️",crowd:18,vibes:["nature","offbeat","culture"],color:"#dde8d4",bestTime:"May–Jun, Sep–Oct",altitude:"1800m",famousFor:"Trout fishing, Uhl river"},
+    {id:8,name:"Shikari Devi",district:"Mandi",desc:"Forest trek to ridge-top temple at 3360m. The temple has no roof.",emoji:"⛰️",crowd:14,vibes:["spiritual","adventure","offbeat"],color:"#e8e0d4",bestTime:"May–Jun, Sep–Oct",altitude:"3360m",famousFor:"Roofless temple, alpine forest"},
+    {id:9,name:"Bir Billing",district:"Kangra",desc:"India's paragliding capital. Tibetan settlement, monasteries, great cafes.",emoji:"🪂",crowd:52,vibes:["adventure","culture"],color:"#d8d4e8",bestTime:"Mar–Jun, Sep–Nov",altitude:"1525m",famousFor:"Paragliding, Tibetan culture"},
+    {id:10,name:"Dharamshala",district:"Kangra",desc:"Home of the Dalai Lama. McLeod Ganj above. Triund trek starts here.",emoji:"🙏",crowd:71,vibes:["spiritual","culture","adventure"],color:"#e8d8d0",bestTime:"Mar–May, Sep–Nov",altitude:"1457m",famousFor:"Dalai Lama temple, Triund trek"},
+    {id:11,name:"Palampur",district:"Kangra",desc:"Tea capital of northwest India. Rolling tea gardens, Dhauladhar backdrop.",emoji:"🍵",crowd:26,vibes:["nature","culture","offbeat"],color:"#d4e8dc",bestTime:"Mar–Jun, Sep–Nov",altitude:"1220m",famousFor:"Tea gardens, Dhauladhar views"},
+    {id:12,name:"Spiti Valley",district:"Lahaul & Spiti",desc:"High-altitude cold desert. Key Monastery, Chandratal Lake, Pin Valley.",emoji:"⛩️",crowd:38,vibes:["adventure","spiritual","offbeat"],color:"#e8e4d4",bestTime:"Jun–Sep",altitude:"3800m avg",famousFor:"Key Monastery, Chandratal Lake"},
+    {id:13,name:"Lahaul Valley",district:"Lahaul & Spiti",desc:"Wild flowers, Buddhist monasteries, potato fields at high altitude.",emoji:"🌸",crowd:22,vibes:["offbeat","spiritual","nature"],color:"#dce4e8",bestTime:"Jun–Sep",altitude:"3100m",famousFor:"Triloknath temple, Chandrabhaga river"},
+    {id:14,name:"Shimla",district:"Shimla",desc:"HP capital at 2206m. Mall Road, toy train, colonial charm. Come March.",emoji:"🚂",crowd:85,vibes:["culture","nature"],color:"#e8dcd4",bestTime:"Mar, Oct–Nov",altitude:"2206m",famousFor:"Mall Road, toy train, Jakhu temple"},
+    {id:15,name:"Chail",district:"Shimla",desc:"Built at 2250m by Maharaja Ranjit Singh. World's highest cricket ground.",emoji:"🏏",crowd:27,vibes:["culture","nature","offbeat"],color:"#d8e4d4",bestTime:"Mar–Jun, Sep–Nov",altitude:"2250m",famousFor:"World's highest cricket ground"},
+    {id:16,name:"Chitkul",district:"Kinnaur",desc:"Last village before Tibet border at 3450m. Apple orchards, Baspa river.",emoji:"🍎",crowd:24,vibes:["offbeat","nature","adventure"],color:"#e8e4dc",bestTime:"May–Oct",altitude:"3450m",famousFor:"Last village before Tibet border"},
+    {id:17,name:"Kalpa",district:"Kinnaur",desc:"Quiet village facing Kinner Kailash massif. You stay longer than planned.",emoji:"🏔️",crowd:19,vibes:["nature","offbeat","spiritual"],color:"#dce8e4",bestTime:"Apr–Jun, Sep–Oct",altitude:"2960m",famousFor:"Kinner Kailash views, apple orchards"},
+    {id:18,name:"Dalhousie",district:"Chamba",desc:"Hill station across five hills at 2036m. Colonial bungalows, Khajjiar nearby.",emoji:"🌄",crowd:48,vibes:["culture","nature"],color:"#dcd8e8",bestTime:"Mar–Jun, Sep–Nov",altitude:"2036m",famousFor:"Khajjiar meadow, colonial architecture"},
+    {id:19,name:"Khajjiar",district:"Chamba",desc:"1.5km circular meadow at 1920m. Mini Switzerland of India.",emoji:"🌿",crowd:33,vibes:["nature","offbeat"],color:"#d4e8d8",bestTime:"Mar–Jun, Sep–Nov",altitude:"1920m",famousFor:"Mini Switzerland meadow"},
+    {id:20,name:"Churdhar Peak",district:"Sirmaur",desc:"Highest outer Himalayan peak at 3647m. Ancient temple. Zero tourists.",emoji:"🗻",crowd:9,vibes:["adventure","spiritual","offbeat"],color:"#e0dce8",bestTime:"May–Jun, Sep–Oct",altitude:"3647m",famousFor:"Highest outer Himalayan peak"},
+  ],
+  stays:[
+    {id:1,name:"Mountain Echo Homestay",loc:"Tirthan Valley, Kullu",price:"₹1,200/night",rating:"4.8 · 42 reviews",type:"Homestay",emoji:"🏡",color:"#e1f0e8",contact:"+91 98050 12345"},
+    {id:2,name:"Barot Riverside Cottage",loc:"Barot, Mandi",price:"₹950/night",rating:"4.9 · 18 reviews",type:"Homestay",emoji:"🌿",color:"#f0e8d4",contact:"+91 94180 67890"},
+    {id:3,name:"Spiti Guesthouse",loc:"Kaza, Spiti",price:"₹800/night",rating:"4.9 · 31 reviews",type:"Guesthouse",emoji:"🏔️",color:"#dce8f0",contact:"+91 70189 11223"},
+    {id:4,name:"Pahari Village Stay",loc:"Bir, Kangra",price:"₹1,100/night",rating:"4.6 · 89 reviews",type:"Homestay",emoji:"🌾",color:"#e8e0f0",contact:"+91 88940 55678"},
+  ],
+  alternatives:[
+    {id:1,for:"Kasol",name:"Tirthan Valley",desc:"Same riverside forest vibe, 4× fewer visitors.",crowd:"22%",vibe:"Offbeat nature"},
+    {id:2,for:"Manali",name:"Barot",desc:"Pine forests, trout fishing, zero tourist chaos.",crowd:"18%",vibe:"Pahari culture"},
+    {id:3,for:"Triund Trek",name:"Chanshal Pass",desc:"Equally dramatic ridgeline, almost no tourists.",crowd:"12%",vibe:"Adventure"},
+    {id:4,for:"Shimla",name:"Chail",desc:"Royal history, dense forests, Himalayan views.",crowd:"28%",vibe:"Culture & nature"},
+  ],
+  media:{}
+};
+
+function gd(){
+  try{
+    const s=localStorage.getItem('pp_data');
+    if(!s) return JSON.parse(JSON.stringify(DEF));
+    const d=JSON.parse(s);
+    // ensure media key exists
+    if(!d.media) d.media={};
+    return d;
+  }catch(e){ return JSON.parse(JSON.stringify(DEF)); }
+}
+function sd(d){ localStorage.setItem('pp_data',JSON.stringify(d)); }
+
+// ═══════════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════════
+function getPW(){ return localStorage.getItem('pp_pw')||'paharipath2025'; }
+
+function tryLogin(){
+  const v = document.getElementById('pwInput').value;
+  if(v === getPW()){
+    localStorage.setItem('pp_sess','1');
+    document.getElementById('loginWrap').classList.add('gone');
+    initAdmin();
+  } else {
+    document.getElementById('loginErr').style.display='block';
+    document.getElementById('pwInput').value='';
+    document.getElementById('pwInput').focus();
+  }
+}
+
+function logout(){
+  localStorage.removeItem('pp_sess');
+  location.reload();
+}
+
+// ═══════════════════════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════════════════════
+function goTo(pg){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.sb-item').forEach(n=>n.classList.remove('on'));
+  document.getElementById('page-'+pg).classList.add('on');
+  const nav=document.getElementById('nav-'+pg);
+  if(nav) nav.classList.add('on');
+  // load data for that page
+  if(pg==='dashboard') buildDash();
+  if(pg==='crowd') buildCrowd();
+  if(pg==='places') buildPlaces();
+  if(pg==='stays') buildStays();
+  if(pg==='alternatives') buildAlts();
+  if(pg==='content') loadContent();
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+function initAdmin(){
+  buildDash();
+  buildCrowd();
+  buildPlaces();
+  buildStays();
+  buildAlts();
+  loadContent();
+}
+
+// ═══════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════
+function buildDash(){
+  const d=gd();
+  const mediaCount=Object.values(d.media||{}).reduce((s,m)=>(s+(m.images||[]).length+(m.videos||[]).length),0);
+  const stats=[
+    {n:d.places.length,l:'Places Listed'},
+    {n:d.stays.length,l:'Stays Listed'},
+    {n:d.alternatives.length,l:'Alternatives'},
+    {n:mediaCount,l:'Media Files'},
+  ];
+  document.getElementById('dash-stats').innerHTML=stats.map(s=>
+    `<div class="stat-card"><div class="sc-num">${s.n}</div><div class="sc-lbl">${s.l}</div></div>`
+  ).join('');
+  const cl=c=>c>=70?'badge-high':c>=45?'badge-med':'badge-low';
+  const ct=c=>c>=70?'Very Crowded':c>=45?'Moderate':'Less Crowded';
+  document.getElementById('dash-places').innerHTML=
+    '<div class="item-list">'+
+    d.places.slice(0,6).map(p=>
+      `<div class="item-card">
+        <div class="ic-emoji">${p.emoji}</div>
+        <div class="ic-info"><div class="ic-name">${p.name}</div><div class="ic-sub">${p.district}</div></div>
+        <span class="badge ${cl(p.crowd)}">${p.crowd}% · ${ct(p.crowd)}</span>
+      </div>`
+    ).join('')+'</div>';
+}
+
+// ═══════════════════════════════════════════════════════
+// CROWD
+// ═══════════════════════════════════════════════════════
+function buildCrowd(){
+  const d=gd();
+  const bc=c=>c>=70?'bar-high':c>=45?'bar-med':'bar-low';
+  document.getElementById('crowd-grid').innerHTML=d.places.map(p=>
+    `<div class="crowd-card">
+      <div class="cc-name">${p.emoji} ${p.name}</div>
+      <div class="cc-dist">${p.district}</div>
+      <div class="cc-bar-bg"><div class="cc-bar-fill ${bc(p.crowd)}" id="cbar-${p.id}" style="width:${p.crowd}%"></div></div>
+      <div style="font-size:12px;color:var(--stone);margin-bottom:8px">Current: <strong id="clbl-${p.id}">${p.crowd}%</strong></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <input type="range" class="range-wrap" style="flex:1;accent-color:var(--pine)" id="csl-${p.id}" min="0" max="100" value="${p.crowd}" oninput="previewCrowd(${p.id},this.value)"/>
+        <span style="font-size:12px;font-weight:600;color:var(--pine);min-width:32px" id="cval-${p.id}">${p.crowd}%</span>
+      </div>
+    </div>`
+  ).join('');
+}
+
+function previewCrowd(id,v){
+  document.getElementById('clbl-'+id).textContent=v+'%';
+  document.getElementById('cval-'+id).textContent=v+'%';
+  const bar=document.getElementById('cbar-'+id);
+  bar.style.width=v+'%';
+  bar.className='cc-bar-fill '+(v>=70?'bar-high':v>=45?'bar-med':'bar-low');
+}
+
+function saveCrowd(){
+  const d=gd();
+  d.places.forEach(p=>{
+    const el=document.getElementById('csl-'+p.id);
+    if(el) p.crowd=parseInt(el.value);
+  });
+  sd(d); showOk('crowd-ok');
+}
+
+// ═══════════════════════════════════════════════════════
+// PLACES & MEDIA
+// ═══════════════════════════════════════════════════════
+function buildPlaces(){
+  const d=gd();
+  const cl=c=>c>=70?'badge-high':c>=45?'badge-med':'badge-low';
+  const ct=c=>c>=70?'Very Crowded':c>=45?'Moderate':'Less Crowded';
+  let html='<div class="item-list">';
+  d.places.forEach(p=>{
+    const pm=(d.media||{})[p.id]||{images:[],videos:[]};
+    const imgs=pm.images||[], vids=pm.videos||[];
+    html+=`
+    <div style="border:1px solid rgba(74,124,95,.12);border-radius:11px;overflow:hidden;background:#fff;margin-bottom:2px">
+      <div class="item-card" style="border:none;border-radius:0">
+        <div class="ic-emoji">${p.emoji}</div>
+        <div class="ic-info">
+          <div class="ic-name">${p.name}</div>
+          <div class="ic-sub">${p.district} · ${(p.vibes||[]).join(', ')}</div>
+          <div class="ic-media">🖼 ${imgs.length} photo${imgs.length!==1?'s':''} &nbsp; 🎬 ${vids.length} video${vids.length!==1?'s':''}</div>
+        </div>
+        <span class="badge ${cl(p.crowd)}">${p.crowd}% · ${ct(p.crowd)}</span>
+        <div class="ic-actions">
+          <button class="btn btn-edit btn-sm" onclick="toggleMedia(${p.id})">📷 Photos & Videos</button>
+          <button class="btn btn-danger btn-sm" onclick="delPlace(${p.id})">Delete</button>
+        </div>
+      </div>
+      <!-- MEDIA PANEL -->
+      <div class="media-panel" id="mp-${p.id}">
+        <div class="mp-title">
+          <span>📷 Media for ${p.name}</span>
+          <button class="btn btn-outline btn-sm" onclick="toggleMedia(${p.id})">Done ✓</button>
+        </div>
+        <div class="mp-section">Photos</div>
+        <div style="font-size:12px;color:var(--stone);margin-bottom:8px">Paste any image URL from the web (Google Images, Unsplash, etc.)</div>
+        <div id="imglist-${p.id}"></div>
+        <div class="media-add-row">
+          <input class="fi" id="imginp-${p.id}" placeholder="https://example.com/photo.jpg"/>
+          <button class="btn btn-primary btn-sm" onclick="addImg(${p.id})">Add Photo</button>
+        </div>
+        <div class="mp-section">YouTube Videos</div>
+        <div style="font-size:12px;color:var(--stone);margin-bottom:8px">Paste a YouTube link — it will embed on the place page</div>
+        <div id="vidlist-${p.id}"></div>
+        <div class="media-add-row">
+          <input class="fi" id="vidinp-${p.id}" placeholder="https://youtube.com/watch?v=..."/>
+          <button class="btn btn-primary btn-sm" onclick="addVid(${p.id})">Add Video</button>
+        </div>
+      </div>
+    </div>`;
+  });
+  html+='</div>';
+  document.getElementById('places-list').innerHTML=html;
+  // populate existing media lists
+  d.places.forEach(p=>refreshMediaLists(p.id));
+}
+
+function toggleMedia(pid){
+  const panel=document.getElementById('mp-'+pid);
+  const isOpen=panel.classList.contains('open');
+  // close all
+  document.querySelectorAll('.media-panel.open').forEach(p=>p.classList.remove('open'));
+  if(!isOpen){
+    panel.classList.add('open');
+    refreshMediaLists(pid);
+    panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+}
+
+function refreshMediaLists(pid){
+  const imgList=document.getElementById('imglist-'+pid);
+  const vidList=document.getElementById('vidlist-'+pid);
+  if(!imgList||!vidList) return;
+  const d=gd();
+  const pm=(d.media||{})[pid]||{images:[],videos:[]};
+  imgList.innerHTML=(pm.images||[]).map((src,i)=>
+    `<div class="media-item">
+      <img class="media-thumb" src="${src}" onerror="this.style.background='#eee';this.src=''"/>
+      <span class="media-url" title="${src}">${src}</span>
+      <button class="btn btn-danger btn-sm" onclick="removeImg(${pid},${i})">✕</button>
+    </div>`
+  ).join('') || '<div style="font-size:12px;color:var(--stone);padding:6px 0">No photos yet</div>';
+  vidList.innerHTML=(pm.videos||[]).map((url,i)=>
+    `<div class="media-item">
+      <span style="font-size:20px;flex-shrink:0">🎬</span>
+      <span class="media-url" title="${url}">${url}</span>
+      <button class="btn btn-danger btn-sm" onclick="removeVid(${pid},${i})">✕</button>
+    </div>`
+  ).join('') || '<div style="font-size:12px;color:var(--stone);padding:6px 0">No videos yet</div>';
+}
+
+function addImg(pid){
+  const inp=document.getElementById('imginp-'+pid);
+  const url=inp.value.trim();
+  if(!url){alert('Paste an image URL first.');return;}
+  if(!url.startsWith('http')){alert('URL must start with https://');return;}
+  const d=gd();
+  if(!d.media) d.media={};
+  if(!d.media[pid]) d.media[pid]={images:[],videos:[]};
+  d.media[pid].images.push(url);
+  sd(d); inp.value='';
+  refreshMediaLists(pid); buildDash(); showOk('places-ok');
+  // update image count label
+  buildPlaces();
+  // re-open the panel
+  setTimeout(()=>{
+    const p=document.getElementById('mp-'+pid);
+    if(p){p.classList.add('open');refreshMediaLists(pid);}
+  },50);
+}
+
+function removeImg(pid,idx){
+  const d=gd();
+  if(d.media&&d.media[pid]) d.media[pid].images.splice(idx,1);
+  sd(d); buildPlaces();
+  setTimeout(()=>{
+    const p=document.getElementById('mp-'+pid);
+    if(p){p.classList.add('open');refreshMediaLists(pid);}
+  },50);
+}
+
+function addVid(pid){
+  const inp=document.getElementById('vidinp-'+pid);
+  const url=inp.value.trim();
+  if(!url){alert('Paste a YouTube URL first.');return;}
+  if(!url.includes('youtube')&&!url.includes('youtu.be')){alert('Only YouTube links supported.');return;}
+  const d=gd();
+  if(!d.media) d.media={};
+  if(!d.media[pid]) d.media[pid]={images:[],videos:[]};
+  d.media[pid].videos.push(url);
+  sd(d); inp.value='';
+  buildPlaces(); buildDash(); showOk('places-ok');
+  setTimeout(()=>{
+    const p=document.getElementById('mp-'+pid);
+    if(p){p.classList.add('open');refreshMediaLists(pid);}
+  },50);
+}
+
+function removeVid(pid,idx){
+  const d=gd();
+  if(d.media&&d.media[pid]) d.media[pid].videos.splice(idx,1);
+  sd(d); buildPlaces();
+  setTimeout(()=>{
+    const p=document.getElementById('mp-'+pid);
+    if(p){p.classList.add('open');refreshMediaLists(pid);}
+  },50);
+}
+
+function addPlace(){
+  const name=document.getElementById('np-name').value.trim();
+  if(!name){alert('Place name is required.');return;}
+  const d=gd();
+  d.places.push({
+    id:Date.now(),name,
+    district:document.getElementById('np-dist').value.trim()||'Himachal Pradesh',
+    desc:document.getElementById('np-desc').value.trim()||'A beautiful place in Himachal Pradesh.',
+    emoji:document.getElementById('np-emoji').value.trim()||'🏔️',
+    bestTime:document.getElementById('np-best').value.trim(),
+    altitude:document.getElementById('np-alt').value.trim(),
+    famousFor:document.getElementById('np-famous').value.trim(),
+    crowd:parseInt(document.getElementById('np-crowd').value)||40,
+    vibes:document.getElementById('np-vibes').value.split(',').map(v=>v.trim()).filter(Boolean),
+    color:document.getElementById('np-color').value||'#d4e6da'
+  });
+  sd(d);
+  ['np-name','np-dist','np-desc','np-emoji','np-best','np-alt','np-famous','np-vibes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('np-crowd').value=40;
+  document.getElementById('np-cv').textContent='40';
+  tog('add-place-form');
+  buildPlaces(); buildDash(); showOk('places-ok');
+}
+
+function delPlace(id){
+  if(!confirm('Delete this place?')) return;
+  const d=gd();
+  d.places=d.places.filter(p=>p.id!==id);
+  sd(d); buildPlaces(); buildDash(); showOk('places-ok');
+}
+
+// ═══════════════════════════════════════════════════════
+// STAYS
+// ═══════════════════════════════════════════════════════
+function buildStays(){
+  const d=gd();
+  document.getElementById('stays-list').innerHTML=
+    '<div class="item-list">'+
+    d.stays.map(s=>
+      `<div class="item-card">
+        <div class="ic-emoji">${s.emoji}</div>
+        <div class="ic-info"><div class="ic-name">${s.name}</div><div class="ic-sub">${s.loc} · ${s.price} · ${s.type}</div></div>
+        <div class="ic-actions">
+          <button class="btn btn-danger btn-sm" onclick="delStay(${s.id})">Delete</button>
+        </div>
+      </div>`
+    ).join('')+'</div>';
+}
+
+function addStay(){
+  const name=document.getElementById('ns-name').value.trim();
+  if(!name){alert('Stay name is required.');return;}
+  const d=gd();
+  d.stays.push({
+    id:Date.now(),name,
+    loc:document.getElementById('ns-loc').value.trim(),
+    type:document.getElementById('ns-type').value,
+    price:document.getElementById('ns-price').value.trim()||'₹1,000/night',
+    rating:document.getElementById('ns-rating').value.trim()||'4.5',
+    contact:document.getElementById('ns-wa').value.trim(),
+    emoji:document.getElementById('ns-emoji').value.trim()||'🏡',
+    color:document.getElementById('ns-color').value||'#e1f0e8'
+  });
+  sd(d);
+  ['ns-name','ns-loc','ns-price','ns-rating','ns-wa','ns-emoji'].forEach(id=>document.getElementById(id).value='');
+  tog('add-stay-form');
+  buildStays(); buildDash(); showOk('stays-ok');
+}
+
+function delStay(id){
+  if(!confirm('Delete this stay?')) return;
+  const d=gd(); d.stays=d.stays.filter(s=>s.id!==id);
+  sd(d); buildStays(); buildDash(); showOk('stays-ok');
+}
+
+// ═══════════════════════════════════════════════════════
+// ALTERNATIVES
+// ═══════════════════════════════════════════════════════
+function buildAlts(){
+  const d=gd();
+  document.getElementById('alts-list').innerHTML=
+    '<div class="item-list">'+
+    d.alternatives.map(a=>
+      `<div class="item-card">
+        <div class="ic-emoji">🔀</div>
+        <div class="ic-info"><div class="ic-name">Instead of ${a.for} → ${a.name}</div><div class="ic-sub">${a.desc}</div></div>
+        <span class="badge badge-low">${a.crowd}</span>
+        <div class="ic-actions">
+          <button class="btn btn-danger btn-sm" onclick="delAlt(${a.id})">Delete</button>
+        </div>
+      </div>`
+    ).join('')+'</div>';
+}
+
+function addAlt(){
+  const name=document.getElementById('na-name').value.trim();
+  if(!name){alert('Alternative name is required.');return;}
+  const d=gd();
+  d.alternatives.push({
+    id:Date.now(),
+    for:document.getElementById('na-for').value.trim(),
+    name,
+    desc:document.getElementById('na-desc').value.trim(),
+    crowd:document.getElementById('na-crowd').value.trim()||'25%',
+    vibe:document.getElementById('na-vibe').value.trim()
+  });
+  sd(d);
+  ['na-for','na-name','na-desc','na-crowd','na-vibe'].forEach(id=>document.getElementById(id).value='');
+  tog('add-alt-form');
+  buildAlts(); showOk('alts-ok');
+}
+
+function delAlt(id){
+  if(!confirm('Delete?')) return;
+  const d=gd(); d.alternatives=d.alternatives.filter(a=>a.id!==id);
+  sd(d); buildAlts(); showOk('alts-ok');
+}
+
+// ═══════════════════════════════════════════════════════
+// CONTENT
+// ═══════════════════════════════════════════════════════
+function loadContent(){
+  const d=gd();
+  document.getElementById('c-name').value=d.siteName||'';
+  document.getElementById('c-eyebrow').value=d.heroEyebrow||'';
+  document.getElementById('c-title').value=d.heroTitle||'';
+  document.getElementById('c-sub').value=d.heroSub||'';
+  document.getElementById('c-stats').value=(d.stats||[]).map(s=>s.num+' | '+s.label).join('\n');
+  document.getElementById('c-about').value=d.aboutText||'';
+  document.getElementById('c-footer').value=d.footerTagline||'';
+}
+
+function saveContent(){
+  const d=gd();
+  d.siteName=document.getElementById('c-name').value;
+  d.heroEyebrow=document.getElementById('c-eyebrow').value;
+  d.heroTitle=document.getElementById('c-title').value;
+  d.heroSub=document.getElementById('c-sub').value;
+  d.aboutText=document.getElementById('c-about').value;
+  d.footerTagline=document.getElementById('c-footer').value;
+  d.stats=document.getElementById('c-stats').value.trim().split('\n').filter(Boolean).map(line=>{
+    const[num,...rest]=line.split('|');
+    return{num:num.trim(),label:rest.join('|').trim()};
+  });
+  sd(d); showOk('content-ok');
+}
+
+// ═══════════════════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════════════════
+function changePW(){
+  const cur=document.getElementById('s-cur').value;
+  const nw=document.getElementById('s-new').value;
+  const con=document.getElementById('s-con').value;
+  const err=document.getElementById('pw-err');
+  err.style.display='none';
+  if(cur!==getPW()){err.textContent='Current password is wrong.';err.style.display='block';return;}
+  if(nw.length<8){err.textContent='New password must be at least 8 characters.';err.style.display='block';return;}
+  if(nw!==con){err.textContent='Passwords do not match.';err.style.display='block';return;}
+  localStorage.setItem('pp_pw',nw);
+  ['s-cur','s-new','s-con'].forEach(id=>document.getElementById(id).value='');
+  showOk('settings-ok');
+}
+
+function exportD(){
+  const blob=new Blob([JSON.stringify(gd(),null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='paharipath-backup-'+new Date().toISOString().split('T')[0]+'.json';
+  a.click();
+}
+function importD(input){
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{sd(JSON.parse(e.target.result));initAdmin();alert('Imported!');}
+    catch(err){alert('Invalid file.');}
+  };
+  reader.readAsText(file);
+}
+function resetD(){
+  if(!confirm('Reset everything to defaults? Cannot undo.')) return;
+  localStorage.removeItem('pp_data');
+  initAdmin(); alert('Reset done.');
+}
+
+// ═══════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════
+function tog(id){
+  const el=document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+function pickC(containerId, fieldId, el){
+  document.querySelectorAll('#'+containerId+' .cswatch').forEach(s=>s.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById(fieldId).value=el.dataset.c;
+}
+
+function showOk(id){
+  const el=document.getElementById(id);
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),3500);
+}
+
+// ═══════════════════════════════════════════════════════
+// BOOT — runs after DOM is fully ready
+// ═══════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function(){
+  // wire up login
+  document.getElementById('loginBtn').addEventListener('click', tryLogin);
+  document.getElementById('pwInput').addEventListener('keydown', e=>{
+    if(e.key==='Enter') tryLogin();
+  });
+
+  // auto-login if session active
+  if(localStorage.getItem('pp_sess')==='1'){
+    document.getElementById('loginWrap').classList.add('gone');
+    initAdmin();
+  }
+});
+</script>
+</body>
+</html>

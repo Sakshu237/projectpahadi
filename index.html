@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PahariPath — Discover Real Himachal</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--pine:#1a3d2b;--moss:#2d5a40;--sage:#4a7c5f;--mist:#e8ede9;--snow:#f5f7f5;--clay:#c4704a;--stone:#6b7c6e;--ink:#1c2420;--cream:#faf9f6;--font-d:'Cormorant Garamond',Georgia,serif;--font-b:'Outfit',sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-b);background:var(--cream);color:var(--ink);overflow-x:hidden}
+nav{position:sticky;top:0;z-index:90;display:flex;align-items:center;justify-content:space-between;padding:14px 48px;background:rgba(250,249,246,.93);backdrop-filter:blur(14px);border-bottom:1px solid rgba(74,124,95,.12)}
+.logo{font-family:var(--font-d);font-size:24px;font-weight:600;color:var(--pine);display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-icon{width:30px;height:30px;background:var(--pine);border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px}
+.nav-links{display:flex;gap:30px;list-style:none}
+.nav-links a{font-size:14px;color:var(--stone);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--pine)}
+.nav-right{display:flex;align-items:center;gap:12px}
+.nav-cta{background:var(--pine);color:#fff;padding:9px 22px;border-radius:9px;font-size:13px;font-weight:500;border:none;cursor:pointer;text-decoration:none;transition:background .2s}
+.nav-cta:hover{background:var(--moss)}
+.live-pill{display:flex;align-items:center;gap:6px;font-size:12px;color:#c0392b;background:#fdeaea;padding:5px 12px;border-radius:20px;border:1px solid #f0b8b8}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#c0392b;animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hero{min-height:88vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 40px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 15% 85%,rgba(74,124,95,.13),transparent 65%),radial-gradient(ellipse 55% 65% at 85% 15%,rgba(26,61,43,.09),transparent 65%),linear-gradient(175deg,#eef2ef,var(--cream))}
+.hero-eyebrow{position:relative;display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--sage);background:rgba(74,124,95,.1);padding:7px 16px;border-radius:20px;margin-bottom:28px;border:1px solid rgba(74,124,95,.2)}
+.hero h1{position:relative;font-family:var(--font-d);font-size:clamp(44px,7.5vw,86px);line-height:1.04;color:var(--pine);margin-bottom:24px;max-width:820px;font-weight:600}
+.hero h1 em{color:var(--clay);font-style:italic}
+.hero-sub{position:relative;font-size:17px;line-height:1.75;color:var(--stone);max-width:500px;margin-bottom:44px;font-weight:300}
+.search-wrap{position:relative;width:100%;max-width:580px;margin-bottom:22px}
+.search-box{display:flex;align-items:center;background:#fff;border:1.5px solid rgba(74,124,95,.18);border-radius:14px;overflow:hidden;box-shadow:0 6px 28px rgba(26,61,43,.09)}
+.search-box input{flex:1;padding:17px 22px;border:none;outline:none;font-family:var(--font-b);font-size:15px;color:var(--ink);background:transparent}
+.search-box input::placeholder{color:var(--stone);opacity:.65}
+.search-btn{margin:6px;background:var(--pine);color:#fff;border:none;border-radius:10px;padding:13px 26px;font-size:14px;font-weight:500;cursor:pointer;transition:background .2s}
+.search-btn:hover{background:var(--moss)}
+.qfilters{position:relative;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.qf{padding:7px 17px;border-radius:20px;font-size:12px;font-weight:500;border:1.5px solid rgba(74,124,95,.22);color:var(--sage);background:#fff;cursor:pointer;transition:all .2s}
+.qf:hover,.qf.active{background:var(--pine);color:#fff;border-color:var(--pine)}
+.stats-bar{display:flex;justify-content:center;background:#fff;border-bottom:1px solid rgba(74,124,95,.1)}
+.stat-item{flex:1;max-width:200px;text-align:center;padding:26px 20px;border-right:1px solid rgba(74,124,95,.1)}
+.stat-item:last-child{border-right:none}
+.stat-num{font-family:var(--font-d);font-size:30px;font-weight:600;color:var(--pine);display:block}
+.stat-label{font-size:11px;color:var(--stone);letter-spacing:.06em;text-transform:uppercase}
+.section{padding:70px 48px;max-width:1240px;margin:0 auto}
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:38px}
+.section-title{font-family:var(--font-d);font-size:36px;color:var(--pine);font-weight:600}
+.section-title span{color:var(--clay);font-style:italic}
+.section-note{font-size:13px;color:var(--stone);max-width:300px;text-align:right;line-height:1.6}
+.crowd-header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+.crowd-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.crowd-row{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid rgba(74,124,95,.1);border-radius:13px;padding:16px 20px;transition:border-color .2s}
+.crowd-row:hover{border-color:rgba(74,124,95,.28)}
+.crowd-emoji{font-size:22px;flex-shrink:0}
+.crowd-place-info{min-width:95px}
+.crowd-name{font-size:14px;font-weight:500;color:var(--ink)}
+.crowd-region{font-size:11px;color:var(--stone);margin-top:2px}
+.crowd-bar-col{flex:1}
+.crowd-bar-bg{height:6px;background:#eee;border-radius:3px;overflow:hidden;margin-bottom:4px}
+.crowd-bar-fill{height:100%;border-radius:3px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.crowd-pct-row{display:flex;justify-content:space-between;font-size:11px;color:var(--stone)}
+.crowd-pill{font-size:10px;font-weight:600;letter-spacing:.04em;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.pill-low{background:#e6f4ec;color:#1e6b3c}
+.pill-med{background:#fef3e2;color:#9b6c1a}
+.pill-high{background:#fdeaea;color:#9b2020}
+.bar-low{background:linear-gradient(90deg,#3aab66,#52c97e)}
+.bar-med{background:linear-gradient(90deg,#e8a020,#f0b830)}
+.bar-high{background:linear-gradient(90deg,#e24a4a,#f06060)}
+.trend-up{color:#c0392b}
+.trend-down{color:#1e6b3c}
+.trend-flat{color:var(--stone)}
+.heatmap-wrap{background:#fff;border:1px solid rgba(74,124,95,.1);border-radius:16px;padding:24px;margin-top:16px}
+.heatmap-title{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:16px}
+.heatmap-grid{display:grid;grid-template-columns:90px repeat(7,1fr);gap:5px;align-items:center}
+.heatmap-day-lbl{font-size:11px;color:var(--stone);text-align:center;font-weight:500}
+.heatmap-place-lbl{font-size:12px;color:var(--stone)}
+.heatmap-cell{height:28px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#fff}
+.alt-band{background:var(--pine);padding:70px 48px;color:#fff}
+.alt-inner{max-width:1240px;margin:0 auto}
+.alt-title{font-family:var(--font-d);font-size:36px;color:#fff;margin-bottom:8px}
+.alt-sub{font-size:15px;color:rgba(255,255,255,.55);font-weight:300;margin-bottom:36px}
+.alt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:14px}
+.alt-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:24px;cursor:pointer;transition:all .22s}
+.alt-card:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.25);transform:translateY(-3px)}
+.alt-instead{font-size:10px;font-weight:600;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px}
+.alt-name{font-family:var(--font-d);font-size:22px;color:#fff;margin-bottom:7px}
+.alt-desc{font-size:13px;color:rgba(255,255,255,.6);line-height:1.55;margin-bottom:16px;font-weight:300}
+.alt-footer{display:flex;align-items:center;gap:10px}
+.alt-crowd-badge{font-size:11px;font-weight:600;padding:3px 11px;border-radius:20px;background:rgba(58,171,102,.22);color:#7dcf9b}
+.alt-vibe{font-size:11px;color:rgba(255,255,255,.4)}
+.places-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:22px}
+.place-card{background:#fff;border:1px solid rgba(74,124,95,.1);border-radius:18px;overflow:hidden;cursor:pointer;transition:all .25s}
+.place-card:hover{border-color:rgba(74,124,95,.28);box-shadow:0 10px 36px rgba(26,61,43,.1);transform:translateY(-4px)}
+.place-img{height:185px;display:flex;align-items:center;justify-content:center;font-size:56px;position:relative}
+.place-crowd-overlay{position:absolute;top:12px;right:12px}
+.place-body{padding:20px 22px}
+.place-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.place-name{font-family:var(--font-d);font-size:20px;font-weight:600;color:var(--ink)}
+.place-dist{font-size:12px;color:var(--stone);margin-top:2px}
+.place-desc{font-size:13px;color:var(--stone);line-height:1.6;margin-bottom:14px;font-weight:300}
+.place-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.place-tag{font-size:11px;padding:3px 11px;border-radius:20px;background:var(--mist);color:var(--sage);font-weight:500}
+.crowd-bar-thin{height:5px;background:#eee;border-radius:3px;overflow:hidden}
+.place-actions{display:flex;gap:8px;margin-top:14px}
+.place-btn{flex:1;padding:10px 12px;border-radius:9px;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;font-family:var(--font-b)}
+.place-btn-primary{background:var(--pine);color:#fff;border:none}
+.place-btn-primary:hover{background:var(--moss)}
+.place-btn-sec{background:transparent;color:var(--stone);border:1px solid rgba(74,124,95,.22)}
+.place-btn-sec:hover{border-color:var(--pine);color:var(--pine)}
+.stays-section{background:var(--snow);padding:70px 0}
+.stays-inner{max-width:1240px;margin:0 auto;padding:0 48px}
+.stays-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:20px}
+.stay-card{background:#fff;border:1px solid rgba(74,124,95,.1);border-radius:18px;overflow:hidden;cursor:pointer;transition:all .25s}
+.stay-card:hover{border-color:rgba(74,124,95,.28);transform:translateY(-4px);box-shadow:0 8px 32px rgba(26,61,43,.1)}
+.stay-img{height:150px;display:flex;align-items:center;justify-content:center;font-size:46px}
+.stay-body{padding:18px 20px}
+.stay-type-badge{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;padding:3px 10px;border-radius:20px;background:var(--mist);color:var(--sage);display:inline-block;margin-bottom:10px}
+.stay-name{font-family:var(--font-d);font-size:17px;font-weight:600;color:var(--ink);margin-bottom:3px}
+.stay-loc{font-size:12px;color:var(--stone);margin-bottom:12px}
+.stay-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.stay-price{font-size:17px;font-weight:600;color:var(--pine)}
+.stay-rating{font-size:12px;color:var(--stone)}
+.stay-contact{font-size:12px;color:var(--stone);margin-bottom:12px}
+.stay-btn{width:100%;padding:11px;border-radius:9px;background:var(--pine);color:#fff;border:none;font-size:13px;font-weight:500;cursor:pointer;transition:background .2s;font-family:var(--font-b)}
+.stay-btn:hover{background:var(--moss)}
+.about-section{padding:80px 48px;text-align:center}
+.about-inner{max-width:680px;margin:0 auto}
+.about-title{font-family:var(--font-d);font-size:38px;color:var(--pine);margin-bottom:20px}
+.about-text{font-size:16px;line-height:1.85;color:var(--stone);font-weight:300;margin-bottom:36px}
+.about-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.about-btn{padding:12px 28px;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font-b);text-decoration:none;display:inline-block;transition:all .2s}
+.about-btn-fill{background:var(--pine);color:#fff;border:none}
+.about-btn-fill:hover{background:var(--moss)}
+.about-btn-outline{background:transparent;color:var(--pine);border:1.5px solid var(--pine)}
+.about-btn-outline:hover{background:var(--pine);color:#fff}
+footer{background:var(--ink);padding:44px 48px;color:rgba(255,255,255,.5);text-align:center}
+.footer-logo{font-family:var(--font-d);font-size:22px;color:#fff;margin-bottom:10px}
+footer p{font-size:13px;line-height:1.7}
+.modal-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:22px;width:100%;max-width:540px;padding:36px;max-height:90vh;overflow-y:auto;animation:mIn .25s ease}
+@keyframes mIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.modal-emoji{font-size:50px;margin-bottom:14px}
+.modal-name{font-family:var(--font-d);font-size:26px;color:var(--pine);margin-bottom:4px}
+.modal-district{font-size:13px;color:var(--stone);margin-bottom:16px}
+.modal-desc{font-size:15px;color:var(--stone);line-height:1.75;margin-bottom:18px;font-weight:300}
+.modal-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--stone);margin-bottom:8px}
+.modal-close-btn{margin-top:22px;background:var(--pine);color:#fff;border:none;border-radius:10px;padding:12px 28px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-b)}
+.modal-close-btn:hover{background:var(--moss)}
+.no-results{text-align:center;padding:56px;color:var(--stone);font-size:15px}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:12px 24px;border-radius:12px;font-size:13px;z-index:999;transition:transform .3s;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+@media(max-width:768px){nav{padding:12px 20px}.nav-links{display:none}.hero{padding:60px 20px}.section{padding:48px 20px}.crowd-grid{grid-template-columns:1fr}.stats-bar{flex-wrap:wrap}.stat-item{min-width:50%}.section-head{flex-direction:column;align-items:flex-start;gap:8px}.section-note{text-align:left}.alt-band{padding:48px 20px}.stays-inner{padding:0 20px}.about-section{padding:56px 20px}footer{padding:36px 20px}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="logo"><div class="logo-icon">⛰</div><span id="siteNameDisplay">PahariPath</span></a>
+  <ul class="nav-links">
+    <li><a href="#crowd">Crowd Meter</a></li>
+    <li><a href="#explore">Explore</a></li>
+    <li><a href="#stays">Stays</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="live-pill"><div class="live-dot"></div>Live Data</div>
+    <a href="#stays" class="nav-cta">Find a Stay →</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-eyebrow" id="heroEyebrow">🏔 Discover Hidden Himachal</div>
+  <h1 id="heroTitle">Go beyond the <em>tourist trail</em></h1>
+  <p class="hero-sub" id="heroSub">Find peaceful valleys, quiet villages, and real Pahadi experiences. Skip the crowds.</p>
+  <div class="search-wrap">
+    <div class="search-box">
+      <input type="text" id="mainSearch" placeholder="Search places, vibes, districts…" onkeydown="if(event.key==='Enter')doSearch()"/>
+      <button class="search-btn" onclick="doSearch()">Explore</button>
+    </div>
+  </div>
+  <div class="qfilters">
+    <button class="qf active" onclick="filterPlaces(this,'all')">All</button>
+    <button class="qf" onclick="filterPlaces(this,'adventure')">Adventure</button>
+    <button class="qf" onclick="filterPlaces(this,'spiritual')">Spiritual</button>
+    <button class="qf" onclick="filterPlaces(this,'nature')">Nature</button>
+    <button class="qf" onclick="filterPlaces(this,'offbeat')">Offbeat</button>
+    <button class="qf" onclick="filterPlaces(this,'culture')">Culture</button>
+  </div>
+</section>
+
+<div class="stats-bar" id="statsBar"></div>
+
+<section class="section" id="crowd">
+  <div class="crowd-header-row">
+    <div>
+      <h2 class="section-title">Live <span>Crowd Meter</span></h2>
+      <p style="font-size:13px;color:var(--stone);margin-top:6px">Powered by Google Popular Times + local scout network</p>
+    </div>
+    <div style="text-align:right">
+      <div class="live-pill" style="display:inline-flex;margin-bottom:6px"><div class="live-dot"></div>Live</div>
+      <div style="font-size:12px;color:var(--stone)" id="updateTime"></div>
+    </div>
+  </div>
+  <div class="crowd-grid" id="crowdGrid"></div>
+  <div class="heatmap-wrap">
+    <div class="heatmap-title">📅 Weekly crowd forecast — best days to visit each place</div>
+    <div class="heatmap-grid" id="heatmapGrid"></div>
+  </div>
+</section>
+
+<div class="alt-band">
+  <div class="alt-inner">
+    <div class="alt-title">Same vibe. <em style="font-style:italic">Fewer people.</em></div>
+    <p class="alt-sub">Overcrowded hotspots have quieter alternatives that feel just as good — or better</p>
+    <div class="alt-grid" id="altGrid"></div>
+  </div>
+</div>
+
+<section class="section" id="explore">
+  <div class="section-head">
+    <div>
+      <h2 class="section-title">Explore <span>Himachal</span></h2>
+      <p style="font-size:13px;color:var(--stone);margin-top:6px" id="placesCount"></p>
+    </div>
+    <p class="section-note">Click any place to see crowd details, best time to visit, and travel tips</p>
+  </div>
+  <div class="places-grid" id="placesGrid"></div>
+</section>
+
+<div class="stays-section" id="stays">
+  <div class="stays-inner">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">Local <span>Stays</span></h2>
+        <p style="font-size:13px;color:var(--stone);margin-top:6px">Homestays, guesthouses & eco stays — book directly with hosts</p>
+      </div>
+    </div>
+    <div class="stays-grid" id="staysGrid"></div>
+  </div>
+</div>
+
+<div class="about-section" id="about">
+  <div class="about-inner">
+    <h2 class="about-title">Why PahariPath?</h2>
+    <p class="about-text" id="aboutText">Himachal Pradesh is far more than Manali, Shimla, and Kasol. PahariPath shows you live crowd data, suggests quiet alternatives, and connects you with real local homestays — so you travel smarter and explore deeper.</p>
+    <div class="about-actions">
+      <a href="#stays" class="about-btn about-btn-fill">Find a Stay</a>
+      <a href="mailto:hello@paharipath.in" class="about-btn about-btn-outline">List Your Property</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo" id="footerLogoText">PahariPath</div>
+  <p id="footerTagline">Promoting offbeat travel · Supporting local communities · Preserving Pahari culture</p>
+  <p style="margin-top:10px;font-size:12px;opacity:.5">© 2025 PahariPath · Built with ❤ for Himachal Pradesh</p>
+</footer>
+
+<!-- FULL PLACE DETAIL PAGE -->
+<div id="placeDetail" style="display:none;position:fixed;inset:0;z-index:200;background:var(--cream);overflow-y:auto;animation:slideIn .25s ease">
+  <style>
+    @keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+    .pd-thumb{width:80px;height:60px;border-radius:8px;object-fit:cover;cursor:pointer;border:2px solid transparent;flex-shrink:0;transition:border-color .15s}
+    .pd-thumb:hover{border-color:var(--sage)}
+    .pd-thumb.active{border-color:var(--pine)}
+    .pd-thumb-video{width:80px;height:60px;border-radius:8px;cursor:pointer;border:2px solid transparent;flex-shrink:0;transition:border-color .15s;position:relative;background:#1a1a1a;display:flex;align-items:center;justify-content:center;color:white;font-size:20px}
+    .pd-vid-card{border-radius:12px;overflow:hidden;background:#000;aspect-ratio:16/9}
+    .pd-vid-card iframe{width:100%;height:100%;border:none}
+    .pd-stay-card{background:#fff;border:1px solid rgba(74,124,95,.12);border-radius:14px;overflow:hidden;transition:all .2s;cursor:pointer}
+    .pd-stay-card:hover{border-color:rgba(74,124,95,.3);transform:translateY(-3px);box-shadow:0 8px 24px rgba(26,61,43,.1)}
+    .pd-fact-row{display:flex;align-items:flex-start;gap:10px;font-size:13px}
+    .pd-fact-icon{flex-shrink:0;width:20px;text-align:center}
+    .pd-fact-label{color:var(--stone);min-width:90px}
+    .pd-fact-val{color:var(--ink);font-weight:500}
+  </style>
+  <div style="position:sticky;top:0;z-index:10;background:rgba(250,249,246,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(74,124,95,.12);display:flex;align-items:center;justify-content:space-between;padding:14px 32px">
+    <button onclick="closePlaceDetail()" style="display:flex;align-items:center;gap:8px;background:none;border:none;font-family:var(--font-b);font-size:14px;color:var(--stone);cursor:pointer;padding:6px 0">← Back to all places</button>
+    <div style="font-family:var(--font-d);font-size:18px;font-weight:600;color:var(--pine)" id="pd-nav-name"></div>
+    <div style="width:160px"></div>
+  </div>
+  <div style="max-width:1100px;margin:0 auto;padding:32px 32px 80px">
+    <!-- HERO GRID -->
+    <div id="pd-hero-grid" style="display:grid;grid-template-columns:1fr 320px;gap:24px;margin-bottom:28px">
+      <div>
+        <div id="pd-main-media" style="width:100%;height:380px;border-radius:16px;overflow:hidden;background:var(--mist);display:flex;align-items:center;justify-content:center;font-size:80px;position:relative;margin-bottom:10px"></div>
+        <div id="pd-thumbs" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div>
+          <div style="font-family:var(--font-d);font-size:38px;font-weight:600;color:var(--pine);line-height:1.1" id="pd-name"></div>
+          <div style="font-size:13px;color:var(--stone);margin-top:5px" id="pd-district"></div>
+        </div>
+        <div style="background:#fff;border:1px solid rgba(74,124,95,.12);border-radius:12px;padding:16px">
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--stone);margin-bottom:10px;display:flex;align-items:center;gap:6px"><div class="live-dot"></div>Live crowd right now</div>
+          <div class="crowd-bar-bg" style="height:10px;border-radius:5px;margin-bottom:8px"><div id="pd-crowd-bar" class="crowd-bar-fill" style="height:100%;border-radius:5px;transition:width .6s"></div></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px">
+            <span id="pd-crowd-pct" style="color:var(--stone)"></span>
+            <span id="pd-crowd-pill" class="crowd-pill"></span>
+          </div>
+        </div>
+        <div style="background:#fff;border:1px solid rgba(74,124,95,.12);border-radius:12px;padding:16px">
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--stone);margin-bottom:12px">Quick Facts</div>
+          <div id="pd-facts" style="display:flex;flex-direction:column;gap:9px"></div>
+        </div>
+        <div id="pd-tags" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+      </div>
+    </div>
+    <!-- DESCRIPTION -->
+    <div style="background:#fff;border:1px solid rgba(74,124,95,.1);border-radius:16px;padding:28px;margin-bottom:24px">
+      <div style="font-family:var(--font-d);font-size:22px;color:var(--pine);margin-bottom:14px">About <span id="pd-about-name" style="color:var(--clay);font-style:italic"></span></div>
+      <p id="pd-desc" style="font-size:15px;color:var(--stone);line-height:1.85;font-weight:300"></p>
+    </div>
+    <!-- VIDEOS -->
+    <div id="pd-videos-section" style="display:none;margin-bottom:24px">
+      <div style="font-family:var(--font-d);font-size:26px;color:var(--pine);margin-bottom:16px">Videos</div>
+      <div id="pd-videos-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px"></div>
+    </div>
+    <!-- STAYS -->
+    <div>
+      <div style="font-family:var(--font-d);font-size:26px;color:var(--pine);margin-bottom:6px">Stays in <span id="pd-stays-name" style="color:var(--clay);font-style:italic"></span></div>
+      <p style="font-size:13px;color:var(--stone);margin-bottom:18px">Book directly with local hosts — no middlemen</p>
+      <div id="pd-stays-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px"></div>
+      <div id="pd-no-stays" style="display:none;background:#fff;border:1px dashed rgba(74,124,95,.25);border-radius:12px;padding:32px;text-align:center;color:var(--stone);font-size:14px">No stays listed for this place yet.<br><span style="font-size:12px;opacity:.6">We are adding more — check back soon.</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DEFAULT DATA (used when no admin changes exist) ─────────
+const DEFAULTS={
+  siteName:"PahariPath",
+  heroEyebrow:"🏔 Discover Hidden Himachal",
+  heroTitle:"Go beyond the tourist trail",
+  heroSub:"Find peaceful valleys, quiet villages, and real Pahadi experiences. Skip the crowds.",
+  aboutText:"Himachal Pradesh is far more than Manali, Shimla, and Kasol. PahariPath shows you live crowd data, suggests quiet alternatives, and connects you with real local homestays — so you travel smarter and explore deeper.",
+  footerTagline:"Promoting offbeat travel · Supporting local communities · Preserving Pahari culture",
+  stats:[{num:"20+",label:"Places Listed"},{num:"12",label:"Districts Covered"},{num:"4",label:"Verified Stays"},{num:"4.8★",label:"Avg Rating"}],
+  places:[
+    // ── DISTRICT: KULLU ──
+    {id:1,name:"Tirthan Valley",district:"Kullu",desc:"Gateway to the Great Himalayan National Park. The Tirthan river here is crystal-clear, perfect for trout fishing. Dense oak and rhododendron forests, zero mobile network, and the kind of silence that city people forget exists.",emoji:"🌿",crowd:22,vibes:["nature","offbeat"],color:"#d4e6da",bestTime:"Oct–Nov, Mar–Apr",altitude:"1600m",famousFor:"GHNP trekking, trout fishing, river walks"},
+    {id:2,name:"Kasol",district:"Kullu",desc:"Parvati Valley's most famous backpacker stop, sitting at 1640m along the Parvati river. Beautiful — but completely overrun May to September. If you must go, October–November is when it feels like a real mountain village again.",emoji:"🏔️",crowd:88,vibes:["adventure","nature"],color:"#e8d4c8",bestTime:"Oct–Nov (off-peak only)",altitude:"1640m",famousFor:"Parvati river, Israel connection, trekking base"},
+    {id:3,name:"Jibhi",district:"Kullu",desc:"A tiny village in Banjar Valley that Kasol used to be before Instagram found it. Traditional wooden Pahari houses, a small waterfall, dense pine forest, and a calm that's getting rarer every year. Go before it changes.",emoji:"🌲",crowd:28,vibes:["offbeat","nature","culture"],color:"#d5e8d0",bestTime:"Mar–Jun, Sep–Nov",altitude:"1680m",famousFor:"Wooden architecture, Jalori Pass, forest walks"},
+    {id:4,name:"Manali",district:"Kullu",desc:"Himachal's most visited town at 2050m on the Beas river. Solang Valley, Rohtang Pass, Old Manali — all iconic. But June–August it's absolute chaos. Come in March for snow or October for clear skies and half the tourists.",emoji:"🏔️",crowd:92,vibes:["adventure","nature","culture"],color:"#e0d4e8",bestTime:"Mar, Oct–Nov",altitude:"2050m",famousFor:"Rohtang Pass, Solang Valley, Old Manali cafes"},
+    {id:5,name:"Malana",district:"Kullu",desc:"An isolated village high above the Malana Nallah with its own distinct culture, governance system, and complete indifference to outsiders. One of the most unique communities in the Himalayas. Don't touch the walls.",emoji:"🏘️",crowd:31,vibes:["offbeat","culture","adventure"],color:"#e4dcc8",bestTime:"May–Jun, Sep–Oct",altitude:"2652m",famousFor:"Ancient self-governance system, unique culture, hashish"},
+    // ── DISTRICT: MANDI ──
+    {id:6,name:"Prashar Lake",district:"Mandi",desc:"A glacial lake at 2730m with a 14th-century pagoda temple on its banks and a mysterious floating island that never settles in one place. The kind of spot that justifies the whole trip. Weekdays only.",emoji:"🌊",crowd:44,vibes:["spiritual","nature"],color:"#d4dce8",bestTime:"Jun–Jul, Sep",altitude:"2730m",famousFor:"Floating island, pagoda temple, Himalayan views"},
+    {id:7,name:"Barot",district:"Mandi",desc:"A quiet valley carved by the Uhl river at 1800m. Pine forests, natural trout streams, a small reservoir, and the satisfying feeling of being somewhere that hasn't been discovered yet. No tourist buses. Real Himachal.",emoji:"🏕️",crowd:18,vibes:["nature","offbeat","culture"],color:"#dde8d4",bestTime:"May–Jun, Sep–Oct",altitude:"1800m",famousFor:"Trout fishing, Uhl river, dense pine forests"},
+    {id:8,name:"Shikari Devi",district:"Mandi",desc:"A forest trek to a ridge-top temple at 3360m dedicated to Goddess Shikari Devi. The temple has no roof — locals say every time one was built, it would collapse by morning. Surrounded by alpine meadows and untouched deodar forest.",emoji:"⛰️",crowd:14,vibes:["spiritual","adventure","offbeat"],color:"#e8e0d4",bestTime:"May–Jun, Sep–Oct",altitude:"3360m",famousFor:"Roofless ancient temple, alpine forest, panoramic views"},
+    // ── DISTRICT: KANGRA ──
+    {id:9,name:"Bir Billing",district:"Kangra",desc:"India's paragliding capital sits at 1525m in the Kangra valley. Tibetan refugee settlement, monasteries, great cafes. Billing at 2400m is the launch site with views of the Dhauladhar range that make the ₹2000 flight instantly worth it.",emoji:"🪂",crowd:52,vibes:["adventure","culture"],color:"#d8d4e8",bestTime:"Mar–Jun, Sep–Nov",altitude:"1525m",famousFor:"Paragliding, Tibetan culture, Dhauladhar views"},
+    {id:10,name:"Dharamshala",district:"Kangra",desc:"Split into lower Dharamshala and upper McLeod Ganj at 1457m. Home of the Dalai Lama and the Tibetan government in exile. Triund trek starts here. Gets busy, but the Tibetan cultural experience is genuinely unlike anywhere else in India.",emoji:"🙏",crowd:71,vibes:["spiritual","culture","adventure"],color:"#e8d8d0",bestTime:"Mar–May, Sep–Nov",altitude:"1457m",famousFor:"Dalai Lama temple, Tibetan culture, Triund trek"},
+    {id:11,name:"Palampur",district:"Kangra",desc:"The tea capital of northwest India at 1220m. Rolling tea gardens against a Dhauladhar backdrop, Victorian-era bungalows, Tashi Jong monastery, and a pace of life that hasn't rushed in decades. Underrated completely.",emoji:"🍵",crowd:26,vibes:["nature","culture","offbeat"],color:"#d4e8dc",bestTime:"Mar–Jun, Sep–Nov",altitude:"1220m",famousFor:"Tea gardens, Dhauladhar views, Baijnath temple nearby"},
+    // ── DISTRICT: LAHAUL & SPITI ──
+    {id:12,name:"Spiti Valley",district:"Lahaul & Spiti",desc:"A high-altitude cold desert at 3800m average elevation, sitting between Tibet and India. Ancient Key Monastery, Chandratal Lake, fossil-rich Pin Valley — it looks like another planet. Only accessible June–October before snowfall closes the passes.",emoji:"⛩️",crowd:38,vibes:["adventure","spiritual","offbeat"],color:"#e8e4d4",bestTime:"Jun–Sep",altitude:"3800m avg",famousFor:"Key Monastery, Chandratal Lake, Pin Valley"},
+    {id:13,name:"Lahaul Valley",district:"Lahaul & Spiti",desc:"The valley between Rohtang and Baralacha La passes at 3100m. Wild flowers in summer, ancient Buddhist monasteries, potato and barley fields on high-altitude plateaus. Half the tourists of Spiti, twice the peace.",emoji:"🌸",crowd:22,vibes:["offbeat","spiritual","nature"],color:"#dce4e8",bestTime:"Jun–Sep",altitude:"3100m",famousFor:"Keylong, Triloknath temple, Chandrabhaga river"},
+    // ── DISTRICT: SHIMLA ──
+    {id:14,name:"Shimla",district:"Shimla",desc:"Himachal's capital at 2206m, built by the British as India's summer capital. Mall Road, Christ Church, the Viceregal Lodge, and the Kalka-Shimla toy train. Impossibly crowded in summer — visit in March when it's quiet and there's still snow.",emoji:"🚂",crowd:85,vibes:["culture","nature"],color:"#e8dcd4",bestTime:"Mar, Oct–Nov",altitude:"2206m",famousFor:"Mall Road, toy train, colonial architecture, Jakhu temple"},
+    {id:15,name:"Chail",district:"Shimla",desc:"Built by Maharaja Ranjit Singh of Patiala after he was exiled from Shimla by the British — at 2250m, higher than Shimla itself. Dense forest, a palace now converted to a heritage hotel, the world's highest cricket ground, and complete peace.",emoji:"🏏",crowd:27,vibes:["culture","nature","offbeat"],color:"#d8e4d4",bestTime:"Mar–Jun, Sep–Nov",altitude:"2250m",famousFor:"World's highest cricket ground, Chail Palace, wildlife sanctuary"},
+    // ── DISTRICT: KINNAUR ──
+    {id:16,name:"Chitkul",district:"Kinnaur",desc:"The last inhabited village before the Indo-Tibetan border at 3450m, on the banks of the Baspa river. Apple orchards, wooden temples, a frontier post, and views of Kinner Kailash peak. The end of the road — literally.",emoji:"🍎",crowd:24,vibes:["offbeat","nature","adventure"],color:"#e8e4dc",bestTime:"May–Oct",altitude:"3450m",famousFor:"Last village before Tibet border, Baspa river, apple orchards"},
+    {id:17,name:"Kalpa",district:"Kinnaur",desc:"A quiet village at 2960m directly across from the Kinner Kailash massif — one of the most dramatic mountain face views in all of Himachal. Apple and apricot orchards everywhere. The kind of place you plan to stay two days and end up staying a week.",emoji:"🏔️",crowd:19,vibes:["nature","offbeat","spiritual"],color:"#dce8e4",bestTime:"Apr–Jun, Sep–Oct",altitude:"2960m",famousFor:"Kinner Kailash views, apple orchards, Kinnaur Kailash circuit"},
+    // ── DISTRICT: CHAMBA ──
+    {id:18,name:"Dalhousie",district:"Chamba",desc:"A hill station at 2036m founded by Lord Dalhousie in 1854 across five hills. Colonial bungalows, Tibetan market, Khajjiar meadow nearby. Quieter than Shimla and Manali, gets fewer visitors despite being equally beautiful.",emoji:"🌄",crowd:48,vibes:["culture","nature"],color:"#dcd8e8",bestTime:"Mar–Jun, Sep–Nov",altitude:"2036m",famousFor:"Khajjiar meadow, Panchpula, colonial architecture"},
+    {id:19,name:"Khajjiar",district:"Chamba",desc:"A 1.5km wide circular meadow at 1920m ringed by deodar trees, with a small lake at its centre. Called the 'Mini Switzerland of India' — genuinely earns the comparison. Only 22km from Dalhousie, almost always uncrowded on weekdays.",emoji:"🌿",crowd:33,vibes:["nature","offbeat"],color:"#d4e8d8",bestTime:"Mar–Jun, Sep–Nov",altitude:"1920m",famousFor:"Mini Switzerland, circular meadow, deodar forest, Khajji Nag temple"},
+    // ── DISTRICT: SIRMAUR ──
+    {id:20,name:"Churdhar Peak",district:"Sirmaur",desc:"The highest peak in the outer Himalayas at 3647m, with a Shirgul Maharaj temple at the summit. A two-day trek through dense forest and rhododendron groves. Virtually unknown outside Himachal — completely untouched by mass tourism.",emoji:"🗻",crowd:9,vibes:["adventure","spiritual","offbeat"],color:"#e0dce8",bestTime:"May–Jun, Sep–Oct",altitude:"3647m",famousFor:"Highest peak of outer Himalayas, ancient summit temple, dense forest trek"},
+  ],
+  stays:[
+    {id:1,name:"Mountain Echo Homestay",loc:"Tirthan Valley, Kullu",price:"₹1,200/night",rating:"4.8 · 42 reviews",type:"Homestay",emoji:"🏡",color:"#e1f0e8",contact:"+91 98050 12345"},
+    {id:2,name:"Barot Riverside Cottage",loc:"Barot, Mandi",price:"₹950/night",rating:"4.9 · 18 reviews",type:"Homestay",emoji:"🌿",color:"#f0e8d4",contact:"+91 94180 67890"},
+    {id:3,name:"Spiti Guesthouse",loc:"Kaza, Spiti",price:"₹800/night",rating:"4.9 · 31 reviews",type:"Guesthouse",emoji:"🏔️",color:"#dce8f0",contact:"+91 70189 11223"},
+    {id:4,name:"Pahari Village Stay",loc:"Bir, Kangra",price:"₹1,100/night",rating:"4.6 · 89 reviews",type:"Homestay",emoji:"🌾",color:"#e8e0f0",contact:"+91 88940 55678"},
+  ],
+  alternatives:[
+    {id:1,for:"Kasol",name:"Tirthan Valley",desc:"Same riverside forest vibe, 4× fewer visitors, better local food.",crowd:"22%",vibe:"Offbeat nature"},
+    {id:2,for:"Manali",name:"Barot",desc:"Pine forests, trout fishing, zero tourist chaos. Real Himachal.",crowd:"18%",vibe:"Pahari culture"},
+    {id:3,for:"Triund Trek",name:"Chanshal Pass",desc:"Equally dramatic high-altitude ridgeline. Almost no tourists.",crowd:"12%",vibe:"Adventure"},
+    {id:4,for:"Shimla",name:"Chail",desc:"Royal history, dense forests, Himalayan views — and peace.",crowd:"28%",vibe:"Culture & nature"},
+  ]
+};
+
+function D(){try{const s=localStorage.getItem('pp_data');return s?JSON.parse(s):DEFAULTS}catch(e){return DEFAULTS}}
+
+// ── REAL-TIME CROWD ENGINE ─────────────────────────────────
+// Uses hour + day-of-week to simulate Google Popular Times pattern
+// When you have real API data, replace getRT() with API call
+function getRT(base){
+  const h=new Date().getHours(),day=new Date().getDay();
+  let m=1;
+  // Time of day pattern (mountain tourism: peaks 10am-4pm)
+  if(h>=10&&h<=13)m=1.35;
+  else if(h>=14&&h<=17)m=1.2;
+  else if(h>=18&&h<=20)m=.85;
+  else if(h<7||h>21)m=.3;
+  // Weekend boost (Sat=6, Sun=0)
+  if(day===0||day===6)m*=1.3;
+  else if(day===5)m*=1.15; // Friday
+  const jitter=(Math.random()-.5)*14;
+  return Math.min(97,Math.max(5,Math.round(base*m+jitter)));
+}
+
+function trend(base,rt){
+  const d=rt-base;
+  if(d>10)return{t:"↑ Rising",c:"trend-up"};
+  if(d<-10)return{t:"↓ Easing",c:"trend-down"};
+  return{t:"→ Steady",c:"trend-flat"};
+}
+
+function crowdClass(c){return c>=70?'high':c>=45?'medium':'low'}
+function crowdLabel(c){return c>=70?'Very Crowded':c>=45?'Moderate':'Less Crowded'}
+function barClass(c){return c>=70?'bar-high':c>=45?'bar-med':'bar-low'}
+function pillClass(c){return c>=70?'pill-high':c>=45?'pill-med':'pill-low'}
+
+// ── HEATMAP ───────────────────────────────────────────────
+function hmColor(v){
+  if(v<30)return`rgba(58,171,102,${.25+v/120})`;
+  if(v<60)return`rgba(232,160,32,${.25+v/120})`;
+  return`rgba(226,74,74,${.3+v/120})`;
+}
+function buildHeatmap(places){
+  const days=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  const mults=[1,.96,.95,.97,1.18,1.48,1.38];
+  let html='<div></div>'+days.map(d=>`<div class="heatmap-day-lbl">${d}</div>`).join('');
+  places.slice(0,5).forEach(p=>{
+    html+=`<div class="heatmap-place-lbl">${p.name.split(' ')[0]}</div>`;
+    mults.forEach(m=>{
+      const v=Math.min(97,Math.round(p.crowd*m+(Math.random()*10-5)));
+      html+=`<div class="heatmap-cell" style="background:${hmColor(v)}" title="${p.name}: ${v}% on this day">${v}%</div>`;
+    });
+  });
+  document.getElementById('heatmapGrid').innerHTML=html;
+}
+
+// ── RENDER ────────────────────────────────────────────────
+function render(){
+  const data=D();
+  // Text
+  document.getElementById('siteNameDisplay').textContent=data.siteName||'PahariPath';
+  document.title=(data.siteName||'PahariPath')+' — Discover Real Himachal';
+  document.getElementById('heroEyebrow').textContent=data.heroEyebrow||DEFAULTS.heroEyebrow;
+  document.getElementById('heroTitle').innerHTML=(data.heroTitle||DEFAULTS.heroTitle);
+  document.getElementById('heroSub').textContent=data.heroSub||DEFAULTS.heroSub;
+  document.getElementById('aboutText').textContent=data.aboutText||DEFAULTS.aboutText;
+  document.getElementById('footerTagline').textContent=data.footerTagline||DEFAULTS.footerTagline;
+  document.getElementById('footerLogoText').textContent=data.siteName||'PahariPath';
+
+  // Stats
+  document.getElementById('statsBar').innerHTML=(data.stats||DEFAULTS.stats).map(s=>
+    `<div class="stat-item"><span class="stat-num">${s.num}</span><span class="stat-label">${s.label}</span></div>`
+  ).join('');
+
+  // Crowd
+  const now=new Date();
+  document.getElementById('updateTime').textContent='Updated '+now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  const places=data.places||DEFAULTS.places;
+  document.getElementById('crowdGrid').innerHTML=places.map(p=>{
+    const rt=getRT(p.crowd),tr=trend(p.crowd,rt);
+    return`<div class="crowd-row">
+      <div class="crowd-emoji">${p.emoji}</div>
+      <div class="crowd-place-info"><div class="crowd-name">${p.name}</div><div class="crowd-region">${p.district}</div></div>
+      <div class="crowd-bar-col">
+        <div class="crowd-bar-bg"><div class="crowd-bar-fill ${barClass(rt)}" style="width:${rt}%"></div></div>
+        <div class="crowd-pct-row"><span>${rt}% busy</span><span class="${tr.c}">${tr.t}</span></div>
+      </div>
+      <span class="crowd-pill ${pillClass(rt)}">${crowdLabel(rt)}</span>
+    </div>`;
+  }).join('');
+  buildHeatmap(places);
+
+  // Alts
+  const alts=data.alternatives||DEFAULTS.alternatives;
+  document.getElementById('altGrid').innerHTML=alts.map(a=>
+    `<div class="alt-card">
+      <div class="alt-instead">Instead of ${a.for}</div>
+      <div class="alt-name">${a.name}</div>
+      <div class="alt-desc">${a.desc}</div>
+      <div class="alt-footer"><span class="alt-crowd-badge">Crowd: ${a.crowd}</span><span class="alt-vibe">${a.vibe}</span></div>
+    </div>`
+  ).join('');
+
+  renderPlaces(places);
+
+  // Stays
+  const stays=data.stays||DEFAULTS.stays;
+  document.getElementById('staysGrid').innerHTML=stays.map(s=>
+    `<div class="stay-card">
+      <div class="stay-img" style="background:${s.color}">${s.emoji}</div>
+      <div class="stay-body">
+        <span class="stay-type-badge">${s.type}</span>
+        <div class="stay-name">${s.name}</div>
+        <div class="stay-loc">📍 ${s.loc}</div>
+        <div class="stay-meta"><span class="stay-price">${s.price}</span><span class="stay-rating">⭐ ${s.rating}</span></div>
+        ${s.contact?`<div class="stay-contact">📞 ${s.contact}</div>`:''}
+        <button class="stay-btn" onclick="bookStay('${s.name.replace(/'/g,"\\'")}','${(s.contact||'').replace(/'/g,"\\'")}')">Book via WhatsApp</button>
+      </div>
+    </div>`
+  ).join('');
+}
+
+function renderPlaces(list){
+  document.getElementById('placesCount').textContent=list.length+' places';
+  document.getElementById('placesGrid').innerHTML=list.length?list.map(p=>{
+    const rt=getRT(p.crowd);
+    return`<div class="place-card">
+      <div class="place-img" style="background:${p.color}">
+        ${p.emoji}
+        <div class="place-crowd-overlay"><span class="crowd-pill ${pillClass(rt)}">${crowdLabel(rt)}</span></div>
+      </div>
+      <div class="place-body">
+        <div class="place-top"><div><div class="place-name">${p.name}</div><div class="place-dist">${p.district} District</div></div></div>
+        <div class="crowd-bar-thin" style="margin-bottom:8px"><div class="crowd-bar-fill ${barClass(rt)}" style="width:${rt}%"></div></div>
+        <div style="font-size:11px;color:var(--stone);margin-bottom:10px">${rt}% crowded right now</div>
+        <p class="place-desc">${p.desc}</p>
+        <div class="place-tags">${(p.vibes||[]).map(v=>`<span class="place-tag">${v}</span>`).join('')}</div>
+        <div class="place-actions">
+          <button class="place-btn place-btn-primary" onclick="openPlaceDetail(${p.id})">Explore →</button>
+          <button class="place-btn place-btn-sec" onclick="document.querySelector('.alt-band').scrollIntoView({behavior:'smooth'})">Alternatives</button>
+        </div>
+      </div>
+    </div>`;
+  }).join(''):`<div class="no-results">No places found. Try a different search term.</div>`;
+}
+
+// ── INTERACTIONS ──────────────────────────────────────────
+function doSearch(){
+  const q=document.getElementById('mainSearch').value.toLowerCase().trim();
+  const places=D().places||DEFAULTS.places;
+  const res=q?places.filter(p=>p.name.toLowerCase().includes(q)||p.district.toLowerCase().includes(q)||(p.vibes||[]).some(v=>v.includes(q))):places;
+  renderPlaces(res);
+  document.getElementById('explore').scrollIntoView({behavior:'smooth'});
+}
+
+function filterPlaces(btn,vibe){
+  document.querySelectorAll('.qf').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const places=D().places||DEFAULTS.places;
+  renderPlaces(vibe==='all'?places:places.filter(p=>(p.vibes||[]).includes(vibe)));
+}
+
+function openPlaceDetail(id){
+  const data=D();
+  const p=(data.places||DEFAULTS.places).find(x=>x.id===id);
+  if(!p)return;
+  const rt=getRT(p.crowd);
+  const media=data.media||{};
+  const placeMedia=media[id]||{images:[],videos:[]};
+
+  // header
+  document.getElementById('pd-nav-name').textContent=p.name;
+  document.getElementById('pd-name').textContent=p.name;
+  document.getElementById('pd-district').textContent=p.district+' District, Himachal Pradesh';
+  document.getElementById('pd-about-name').textContent=p.name;
+  document.getElementById('pd-stays-name').textContent=p.name;
+  document.getElementById('pd-desc').textContent=p.desc;
+
+  // crowd
+  const bar=document.getElementById('pd-crowd-bar');
+  bar.style.width=rt+'%';
+  bar.className='crowd-bar-fill '+barClass(rt);
+  document.getElementById('pd-crowd-pct').textContent=rt+'% busy right now';
+  const pill=document.getElementById('pd-crowd-pill');
+  pill.textContent=crowdLabel(rt);
+  pill.className='crowd-pill '+pillClass(rt);
+
+  // facts
+  const facts=[];
+  if(p.altitude)facts.push({icon:'⛰',label:'Altitude',val:p.altitude+' ASL'});
+  if(p.bestTime)facts.push({icon:'🗓',label:'Best time',val:p.bestTime});
+  if(p.famousFor)facts.push({icon:'✨',label:'Famous for',val:p.famousFor});
+  document.getElementById('pd-facts').innerHTML=facts.map(f=>
+    `<div class="pd-fact-row"><span class="pd-fact-icon">${f.icon}</span><span class="pd-fact-label">${f.label}</span><span class="pd-fact-val">${f.val}</span></div>`
+  ).join('');
+
+  // tags
+  document.getElementById('pd-tags').innerHTML=(p.vibes||[]).map(v=>`<span class="place-tag">${v}</span>`).join('');
+
+  // MEDIA — main display + thumbnails
+  const mainBox=document.getElementById('pd-main-media');
+  const thumbsBox=document.getElementById('pd-thumbs');
+  const imgs=placeMedia.images||[];
+  const vids=placeMedia.videos||[];
+  thumbsBox.innerHTML='';
+
+  function setMain(html){mainBox.innerHTML=html;}
+
+  if(imgs.length===0 && vids.length===0){
+    setMain(`<span style="opacity:.4">${p.emoji}</span>`);
+  } else {
+    // first image or video as main
+    const firstImg=imgs[0];
+    if(firstImg){
+      setMain(`<img src="${firstImg}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='<span style=opacity:.3>${p.emoji}</span>'">`);
+    } else if(vids[0]){
+      const ytId=extractYT(vids[0]);
+      setMain(ytId?`<iframe src="https://www.youtube.com/embed/${ytId}" style="width:100%;height:100%;border:none" allowfullscreen></iframe>`:`<video src="${vids[0]}" controls style="width:100%;height:100%;object-fit:cover"></video>`);
+    }
+    // thumbnails
+    imgs.forEach((src,i)=>{
+      const t=document.createElement('img');
+      t.src=src; t.className='pd-thumb'+(i===0&&imgs.length?' active':'');
+      t.onclick=()=>{
+        setMain(`<img src="${src}" style="width:100%;height:100%;object-fit:cover">`);
+        thumbsBox.querySelectorAll('.pd-thumb,.pd-thumb-video').forEach(x=>x.classList.remove('active'));
+        t.classList.add('active');
+      };
+      thumbsBox.appendChild(t);
+    });
+    vids.forEach((url,i)=>{
+      const t=document.createElement('div');
+      t.className='pd-thumb-video'+(imgs.length===0&&i===0?' active':'');
+      t.innerHTML='▶';
+      t.title=url;
+      t.onclick=()=>{
+        const ytId=extractYT(url);
+        setMain(ytId?`<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1" style="width:100%;height:100%;border:none" allowfullscreen></iframe>`:`<video src="${url}" controls autoplay style="width:100%;height:100%;object-fit:cover"></video>`);
+        thumbsBox.querySelectorAll('.pd-thumb,.pd-thumb-video').forEach(x=>x.classList.remove('active'));
+        t.classList.add('active');
+      };
+      thumbsBox.appendChild(t);
+    });
+  }
+
+  // videos section
+  const vsec=document.getElementById('pd-videos-section');
+  const vgrid=document.getElementById('pd-videos-grid');
+  if(vids.length){
+    vsec.style.display='block';
+    vgrid.innerHTML=vids.map(url=>{
+      const ytId=extractYT(url);
+      return ytId
+        ?`<div class="pd-vid-card"><iframe src="https://www.youtube.com/embed/${ytId}" allowfullscreen></iframe></div>`
+        :`<div class="pd-vid-card"><video src="${url}" controls style="width:100%;height:100%"></video></div>`;
+    }).join('');
+  } else {vsec.style.display='none';}
+
+  // stays for this place
+  const allStays=data.stays||DEFAULTS.stays;
+  const pname=p.name.toLowerCase();
+  const matched=allStays.filter(s=>(s.placeid&&s.placeid==id)||(s.loc&&s.loc.toLowerCase().includes(pname)));
+  const stayGrid=document.getElementById('pd-stays-grid');
+  const noStays=document.getElementById('pd-no-stays');
+  if(matched.length){
+    noStays.style.display='none';
+    stayGrid.innerHTML=matched.map(s=>`
+      <div class="pd-stay-card">
+        <div style="height:130px;display:flex;align-items:center;justify-content:center;font-size:44px;background:${s.color}">${s.emoji}</div>
+        <div style="padding:16px 18px">
+          <span class="stay-type-badge">${s.type}</span>
+          <div class="stay-name">${s.name}</div>
+          <div class="stay-loc">📍 ${s.loc}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin:10px 0">
+            <span class="stay-price">${s.price}</span>
+            <span class="stay-rating">⭐ ${s.rating}</span>
+          </div>
+          ${s.contact?`<div class="stay-contact" style="font-size:12px;color:var(--stone);margin-bottom:10px">📞 ${s.contact}</div>`:''}
+          <button class="stay-btn" onclick="bookStay('${s.name.replace(/'/g,"\'")}','${(s.contact||'').replace(/'/g,"\'")}')">Book via WhatsApp</button>
+        </div>
+      </div>`).join('');
+  } else {
+    stayGrid.innerHTML='';
+    noStays.style.display='block';
+  }
+
+  // show
+  const detail=document.getElementById('placeDetail');
+  detail.style.display='block';
+  detail.scrollTop=0;
+  document.body.style.overflow='hidden';
+}
+
+function closePlaceDetail(){
+  document.getElementById('placeDetail').style.display='none';
+  document.body.style.overflow='';
+}
+
+function extractYT(url){
+  if(!url)return null;
+  const m=url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  return m?m[1]:null;
+}
+
+function bookStay(name,contact){
+  if(contact){
+    const num=contact.replace(/[^0-9]/g,'');
+    window.open(`https://wa.me/91${num}?text=Hi! I found *${name}* on PahariPath and I'd like to enquire about availability.`,'_blank');
+  }else{toast('Contact details not available yet.');}
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// Refresh crowd every 5 min
+setInterval(()=>{const places=D().places||DEFAULTS.places;renderPlaces(places);},5*60*1000);
+
+render();
+</script>
+</body>
+</html>
