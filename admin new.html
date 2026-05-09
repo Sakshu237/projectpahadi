@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>PahariPath Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Outfit',sans-serif;background:#f0f2f0;color:#1c2420;min-height:100vh}
+:root{--pine:#1a3d2b;--moss:#2d5a40;--sage:#4a7c5f;--stone:#6b7c6e;--red:#c0392b;--green:#1e6b3c}
+.login-wrap{position:fixed;inset:0;background:var(--pine);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .35s}
+.login-wrap.gone{opacity:0;pointer-events:none}
+.login-card{background:#fff;border-radius:20px;padding:44px 38px;width:380px;text-align:center}
+.login-icon{font-size:40px;margin-bottom:14px}
+.login-title{font-size:22px;font-weight:600;color:var(--pine);margin-bottom:6px}
+.login-sub{font-size:13px;color:var(--stone);margin-bottom:28px}
+.lbl{display:block;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--stone);margin-bottom:6px}
+.inp{width:100%;padding:12px 14px;border:1.5px solid #ddd;border-radius:9px;font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:border-color .2s;margin-bottom:14px}
+.inp:focus{border-color:var(--sage)}
+.login-btn{width:100%;padding:13px;background:var(--pine);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif}
+.login-btn:hover{background:var(--moss)}
+.login-err{color:var(--red);font-size:13px;margin-top:10px;display:none}
+.login-hint{font-size:12px;color:var(--stone);margin-top:18px;opacity:.7;line-height:1.6}
+.layout{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+.sidebar{background:var(--pine);display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.sb-logo{padding:22px 20px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-logo-title{font-size:17px;font-weight:600;color:#fff}
+.sb-logo-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px}
+.sb-nav{flex:1;padding:12px 10px;overflow-y:auto}
+.sb-group{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);padding:10px 12px 5px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;cursor:pointer;margin-bottom:2px;color:rgba(255,255,255,.65);font-size:13px;transition:background .15s}
+.sb-item:hover{background:rgba(255,255,255,.1);color:#fff}
+.sb-item.on{background:rgba(255,255,255,.15);color:#fff;font-weight:500}
+.sb-foot{padding:14px 18px;border-top:1px solid rgba(255,255,255,.1)}
+.sb-foot-txt{font-size:12px;color:rgba(255,255,255,.3)}
+.sb-logout{margin-top:8px;width:100%;padding:8px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:none;border-radius:8px;font-size:12px;cursor:pointer;font-family:'Outfit',sans-serif}
+.sb-logout:hover{background:rgba(255,255,255,.14)}
+.main{padding:24px 28px;overflow-y:auto}
+.page{display:none}.page.on{display:block}
+.ph{margin-bottom:20px}
+.ph-title{font-size:22px;font-weight:600;color:var(--pine)}
+.ph-sub{font-size:13px;color:var(--stone);margin-top:4px}
+.preview-bar{background:var(--pine);color:#fff;padding:12px 18px;border-radius:12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;text-decoration:none;transition:background .2s}
+.preview-bar:hover{background:var(--moss)}
+.pb-btn{background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif}
+.panel{background:#fff;border:1px solid rgba(74,124,95,.1);border-radius:14px;padding:20px;margin-bottom:16px}
+.panel-title{font-size:14px;font-weight:600;color:#1c2420;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.fg{margin-bottom:12px}
+.fg label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--stone);margin-bottom:5px}
+.fi,.fs,.ft{width:100%;padding:10px 13px;border:1.5px solid #e0e0e0;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;color:#1c2420;outline:none;transition:border-color .2s}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--sage)}
+.ft{min-height:72px;resize:vertical}
+.fhint{font-size:11px;color:var(--stone);margin-top:4px;line-height:1.5}
+.btn{padding:9px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif;border:none;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+.btn-primary{background:var(--pine);color:#fff}.btn-primary:hover{background:var(--moss)}
+.btn-outline{background:transparent;color:var(--stone);border:1.5px solid #ddd}.btn-outline:hover{border-color:var(--sage);color:var(--pine)}
+.btn-danger{background:#fdeaea;color:var(--red);border:1px solid #f0b8b8}.btn-danger:hover{background:#fce0e0}
+.btn-edit{background:#e8f0eb;color:var(--pine);border:1px solid rgba(74,124,95,.2)}.btn-edit:hover{background:#d4e8da}
+.btn-sm{padding:6px 12px;font-size:12px}
+.add-trigger{width:100%;padding:11px;border:1.5px dashed rgba(74,124,95,.3);border-radius:9px;background:transparent;color:var(--sage);font-size:13px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif;margin-top:10px;transition:all .2s}
+.add-trigger:hover{border-color:var(--sage);background:#f5faf6}
+.item-list{display:flex;flex-direction:column;gap:8px}
+.item-card{border:1px solid rgba(74,124,95,.12);border-radius:11px;padding:14px 16px;background:#fff;display:flex;align-items:center;gap:12px;flex-wrap:wrap;transition:border-color .15s}
+.item-card:hover{border-color:rgba(74,124,95,.3)}
+.ic-emoji{font-size:22px;flex-shrink:0}
+.ic-info{flex:1;min-width:0}
+.ic-name{font-size:14px;font-weight:500;color:#1c2420}
+.ic-sub{font-size:12px;color:var(--stone);margin-top:2px}
+.ic-media{font-size:11px;color:var(--sage);margin-top:3px}
+.ic-actions{display:flex;gap:6px;flex-wrap:wrap}
+.badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px}
+.badge-low{background:#e6f4ec;color:#1e6b3c}
+.badge-med{background:#fef3e2;color:#9b6c1a}
+.badge-high{background:#fdeaea;color:#9b2020}
+.add-form{background:#f8faf8;border:1.5px dashed rgba(74,124,95,.22);border-radius:12px;padding:18px;margin-top:10px;display:none}
+.add-form.open{display:block}
+.add-form-title{font-size:14px;font-weight:600;color:var(--pine);margin-bottom:14px}
+.media-panel{display:none;background:#f0f6f2;border:1.5px solid rgba(74,124,95,.2);border-radius:12px;padding:18px;margin-top:8px;width:100%}
+.media-panel.open{display:block}
+.mp-section{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--stone);margin-bottom:8px;margin-top:14px}
+.mp-section:first-of-type{margin-top:0}
+.media-item{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #eee;border-radius:8px;padding:8px 10px;margin-bottom:6px}
+.media-thumb{width:48px;height:36px;object-fit:cover;border-radius:5px;flex-shrink:0}
+.media-url{flex:1;font-size:12px;color:var(--stone);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.media-add-row{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+.media-add-row .fi{flex:1;min-width:200px;font-size:12px;padding:9px 12px}
+.crowd-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.crowd-card{background:#fff;border:1px solid rgba(74,124,95,.12);border-radius:12px;padding:16px}
+.cc-name{font-size:14px;font-weight:500;color:#1c2420;margin-bottom:2px}
+.cc-dist{font-size:12px;color:var(--stone);margin-bottom:10px}
+.cc-bar-bg{height:7px;background:#eee;border-radius:4px;overflow:hidden;margin-bottom:6px}
+.cc-bar-fill{height:100%;border-radius:4px;transition:width .4s}
+.bar-low{background:linear-gradient(90deg,#3aab66,#52c97e)}
+.bar-med{background:linear-gradient(90deg,#e8a020,#f0b830)}
+.bar-high{background:linear-gradient(90deg,#e24a4a,#f06060)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.stat-card{background:#fff;border:1px solid rgba(74,124,95,.1);border-radius:12px;padding:18px;text-align:center}
+.sc-num{font-size:26px;font-weight:600;color:var(--pine)}
+.sc-lbl{font-size:12px;color:var(--stone);margin-top:3px}
+.color-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:5px}
+.cswatch{width:30px;height:30px;border-radius:7px;cursor:pointer;border:2px solid transparent;position:relative;transition:border-color .15s}
+.cswatch.on{border-color:#1c2420}
+.cswatch.on::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff}
+.success{background:#e6f4ec;color:var(--green);border:1px solid #b8dfc8;border-radius:9px;padding:11px 15px;font-size:13px;margin-bottom:14px;display:none;align-items:center;gap:8px}
+.success.show{display:flex}
+/* CROWD DISPLAY TOGGLE */
+.crowd-toggle{display:flex;gap:8px;margin-bottom:16px;background:#f0f0f0;padding:4px;border-radius:10px;width:fit-content}
+.ct-btn{padding:7px 16px;border-radius:7px;border:none;font-size:12px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif;background:transparent;color:var(--stone);transition:all .15s}
+.ct-btn.on{background:#fff;color:var(--pine);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+/* SEARCH DB */
+.db-search{position:relative;margin-bottom:16px}
+.db-results{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid rgba(74,124,95,.25);border-radius:10px;z-index:50;max-height:280px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.12);display:none}
+.db-results.open{display:block}
+.db-item{padding:11px 14px;cursor:pointer;border-bottom:1px solid #f0f0f0;transition:background .12s}
+.db-item:hover{background:#f5faf6}
+.db-item:last-child{border-bottom:none}
+.db-item-name{font-size:14px;font-weight:500;color:#1c2420}
+.db-item-meta{font-size:11px;color:var(--stone);margin-top:2px}
+.db-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:#e8f0eb;color:var(--pine);margin-left:6px}
+/* AUTOFILL STATUS */
+.autofill-status{background:linear-gradient(135deg,#e6f4ec,#d4eadb);border:1px solid #b8dfc8;border-radius:10px;padding:14px;margin-bottom:14px;display:none}
+.autofill-status.show{display:block}
+.af-title{font-size:13px;font-weight:600;color:var(--green);margin-bottom:8px}
+.af-tags{display:flex;gap:6px;flex-wrap:wrap}
+.af-tag{font-size:11px;padding:3px 9px;border-radius:20px;background:rgba(255,255,255,.7);color:var(--pine)}
+/* FILE UPLOAD */
+.upload-zone{border:2px dashed rgba(74,124,95,.3);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:#fafcfa}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--sage);background:#f0f6f2}
+.upload-zone input[type=file]{display:none}
+.upload-zone-icon{font-size:28px;margin-bottom:8px}
+.upload-zone-txt{font-size:13px;color:var(--stone)}
+.upload-zone-txt strong{color:var(--pine)}
+/* DATE FORECAST */
+.forecast-panel{background:#fff;border:1px solid rgba(74,124,95,.12);border-radius:14px;padding:22px;margin-top:16px;display:none}
+.forecast-panel.show{display:block}
+.fp-header{font-size:16px;font-weight:600;color:var(--pine);margin-bottom:16px}
+.fp-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.fp-card{border-radius:12px;padding:16px;text-align:center}
+.fp-card-good{background:#e6f4ec;border:1px solid #b8dfc8}
+.fp-card-warn{background:#fef3e2;border:1px solid #f5d98a}
+.fp-card-danger{background:#fdeaea;border:1px solid #f0b8b8}
+.fp-icon{font-size:28px;margin-bottom:8px}
+.fp-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.fp-value{font-size:14px;line-height:1.5}
+.fp-advice{border-radius:12px;padding:16px;margin-top:12px;font-size:14px;line-height:1.7}
+.fp-advice-good{background:#e6f4ec;border:1px solid #b8dfc8;color:#1e5c34}
+.fp-advice-warn{background:#fef3e2;border:1px solid #f5d98a;color:#7a4f0c}
+.fp-advice-danger{background:#fdeaea;border:1px solid #f0b8b8;color:#8b1a1a}
+/* DISTRICT DB */
+.dist-accordion{border:1px solid rgba(74,124,95,.12);border-radius:12px;overflow:hidden;margin-bottom:8px}
+.dist-header{padding:14px 18px;background:#fff;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background .15s}
+.dist-header:hover{background:#f5faf6}
+.dist-name{font-size:14px;font-weight:500;color:var(--pine)}
+.dist-count{font-size:12px;color:var(--stone)}
+.dist-arrow{font-size:12px;color:var(--stone);transition:transform .2s}
+.dist-body{display:none;padding:14px 18px;background:#fafcfa;border-top:1px solid rgba(74,124,95,.08)}
+.dist-body.open{display:block}
+.dist-places{display:flex;flex-wrap:wrap;gap:6px}
+.dist-place-chip{font-size:12px;padding:5px 12px;background:#fff;border:1px solid rgba(74,124,95,.2);border-radius:20px;color:#1c2420;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px}
+.dist-place-chip:hover{border-color:var(--pine);background:#e8f0eb;color:var(--pine)}
+.dist-place-chip .chip-add{font-size:14px;font-weight:600;color:var(--sage)}
+.offbeat-chip{border-color:rgba(212,168,67,.4);background:#fef9ee}
+.offbeat-chip:hover{border-color:#c9963a;background:#fef3e2}
+/* SNOW/SEASONAL */
+.season-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-top:8px}
+.season-cell{height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:#fff}
+.s-snow{background:#5da8d4}
+.s-rain{background:#4a7cb5}
+.s-good{background:#3aab66}
+.s-warm{background:#e8a020}
+.s-dry{background:#c4b090}
+code{background:#f0f0f0;padding:2px 6px;border-radius:4px;font-size:12px}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.sidebar{position:fixed;bottom:0;top:auto;height:60px;flex-direction:row;width:100%;z-index:50}.sb-logo,.sb-foot{display:none}.sb-nav{display:flex;padding:6px}.sb-group{display:none}.sb-item{flex-direction:column;font-size:10px;padding:6px 8px;gap:3px}.main{padding:16px;padding-bottom:72px}.crowd-grid,.stats-grid,.row2,.row3,.fp-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="login-wrap" id="loginWrap">
+  <div class="login-card">
+    <div class="login-icon">⛰</div>
+    <div class="login-title">PahariPath Admin</div>
+    <div class="login-sub">Enter password to manage your website</div>
+    <label class="lbl">Password</label>
+    <input type="password" class="inp" id="pwInput" placeholder="Enter admin password"/>
+    <button class="login-btn" id="loginBtn">Sign In →</button>
+    <div class="login-err" id="loginErr">❌ Wrong password. Try again.</div>
+    <div class="login-hint">Default: <strong>paharipath2025</strong><br>Change it in Settings after login.</div>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-title">⛰ PahariPath</div>
+      <div class="sb-logo-sub">Admin Dashboard</div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-group">Manage</div>
+      <div class="sb-item on" id="nav-dashboard" onclick="goTo('dashboard')"><span>📊</span>Dashboard</div>
+      <div class="sb-item" id="nav-crowd" onclick="goTo('crowd')"><span>🔴</span>Crowd Data</div>
+      <div class="sb-item" id="nav-places" onclick="goTo('places')"><span>🏔</span>Places & Media</div>
+      <div class="sb-item" id="nav-forecast" onclick="goTo('forecast')"><span>🗓</span>Date Forecast</div>
+      <div class="sb-item" id="nav-stays" onclick="goTo('stays')"><span>🏡</span>Stays</div>
+      <div class="sb-item" id="nav-alternatives" onclick="goTo('alternatives')"><span>🔀</span>Alternatives</div>
+      <div class="sb-group">Site</div>
+      <div class="sb-item" id="nav-content" onclick="goTo('content')"><span>✏️</span>Text & Content</div>
+      <div class="sb-item" id="nav-settings" onclick="goTo('settings')"><span>⚙️</span>Settings</div>
+    </nav>
+    <div class="sb-foot">
+      <div class="sb-foot-txt">Logged in as Admin</div>
+      <button class="sb-logout" onclick="logout()">Sign Out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <a href="index.html" target="_blank" class="preview-bar">
+      <div><div style="font-size:13px">🌐 View live website</div><div style="font-size:12px;color:rgba(255,255,255,.6)">Opens in new tab</div></div>
+      <span class="pb-btn">Preview →</span>
+    </a>
+
+    <!-- DASHBOARD -->
+    <div class="page on" id="page-dashboard">
+      <div class="ph"><div class="ph-title">Dashboard</div><div class="ph-sub">Your PahariPath at a glance</div></div>
+      <div class="stats-grid" id="dash-stats"></div>
+      <div class="panel">
+        <div class="panel-title">⚡ Quick Actions</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="goTo('crowd')">Update Crowd Now</button>
+          <button class="btn btn-outline" onclick="goTo('places')">Add Place</button>
+          <button class="btn btn-outline" onclick="goTo('forecast')">Check Date Forecast</button>
+          <button class="btn btn-outline" onclick="goTo('stays')">Add Stay</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">🏔 Places — Crowd Overview</div>
+        <!-- CROWD DISPLAY TOGGLE -->
+        <div class="crowd-toggle">
+          <button class="ct-btn on" id="ct-pct" onclick="setCrowdDisplay('pct')">Show % Numbers</button>
+          <button class="ct-btn" id="ct-color" onclick="setCrowdDisplay('color')">Color Only</button>
+        </div>
+        <div id="dash-crowd-list"></div>
+      </div>
+    </div>
+
+    <!-- CROWD DATA -->
+    <div class="page" id="page-crowd">
+      <div class="ph"><div class="ph-title">Live Crowd Data</div><div class="ph-sub">Update crowd levels — shows live on your website</div></div>
+      <div class="success" id="crowd-ok">✅ Crowd data saved! Site updated.</div>
+      <div class="panel">
+        <div class="panel-title">🔴 Set Crowd Levels</div>
+        <p style="font-size:13px;color:var(--stone);margin-bottom:18px">Drag sliders to set how busy each place is right now. 0 = empty · 100 = completely packed.</p>
+        <div class="crowd-grid" id="crowd-grid"></div>
+        <div style="margin-top:16px;display:flex;gap:8px">
+          <button class="btn btn-primary" onclick="saveCrowd()">💾 Save All</button>
+          <button class="btn btn-outline" onclick="buildCrowd()">↺ Reset</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">💡 How to get real crowd numbers</div>
+        <div style="font-size:13px;color:var(--stone);line-height:2">
+          <p><strong style="color:#1c2420">Google Maps:</strong> Search place → scroll to "Popular times" → read % for current hour</p>
+          <p><strong style="color:#1c2420">WhatsApp scouts:</strong> Text local contact "bheed 1-10?" → multiply by 10</p>
+          <p><strong style="color:#1c2420">Instagram:</strong> Many recent posts = high crowd. Few posts = quiet.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLACES & MEDIA -->
+    <div class="page" id="page-places">
+      <div class="ph"><div class="ph-title">Places & Media</div><div class="ph-sub">Add places, photos, and YouTube videos</div></div>
+      <div class="success" id="places-ok">✅ Saved!</div>
+
+      <!-- ADD NEW PLACE with autofill -->
+      <div class="panel">
+        <div class="panel-title">➕ Add New Place</div>
+        <p style="font-size:13px;color:var(--stone);margin-bottom:14px">Type a place name — we'll search our Himachal database and auto-fill details for you.</p>
+
+        <!-- SEARCH BOX -->
+        <div class="db-search">
+          <label class="fg" style="margin-bottom:0"><label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--stone);display:block;margin-bottom:5px">Search Himachal Database</label>
+          <input class="fi" id="place-search" placeholder="Type place name e.g. Jibhi, Tosh, Shangarh..." autocomplete="off" oninput="searchDB(this.value)"/></label>
+          <div class="db-results" id="db-results"></div>
+        </div>
+
+        <!-- AUTOFILL STATUS -->
+        <div class="autofill-status" id="autofill-status">
+          <div class="af-title">✅ Details auto-filled from database!</div>
+          <div class="af-tags" id="af-tags"></div>
+        </div>
+
+        <div class="add-form open" id="add-place-form" style="border:none;background:transparent;padding:0;margin:0">
+          <div class="row2">
+            <div class="fg"><label>Place Name *</label><input class="fi" id="np-name" placeholder="e.g. Shangarh"/></div>
+            <div class="fg"><label>District *</label><input class="fi" id="np-dist" placeholder="e.g. Kullu"/></div>
+          </div>
+          <div class="fg"><label>Description</label><textarea class="ft" id="np-desc" placeholder="What makes this place special..."></textarea></div>
+          <div class="row3">
+            <div class="fg"><label>Emoji</label><input class="fi" id="np-emoji" placeholder="🏔️" style="font-size:18px"/></div>
+            <div class="fg"><label>Altitude</label><input class="fi" id="np-alt" placeholder="2000m"/></div>
+            <div class="fg"><label>Best Time</label><input class="fi" id="np-best" placeholder="Oct–Nov, Mar–Apr"/></div>
+          </div>
+          <div class="fg"><label>Famous For</label><input class="fi" id="np-famous" placeholder="Trekking, river views, forest walks"/></div>
+          <div class="fg">
+            <label>Crowd Level: <span id="np-cv">35</span>%</label>
+            <div style="display:flex;align-items:center;gap:10px"><input type="range" style="flex:1;accent-color:var(--pine)" min="0" max="100" value="35" id="np-crowd" oninput="document.getElementById('np-cv').textContent=this.value"/></div>
+          </div>
+          <div class="fg"><label>Vibes (comma separated)</label><input class="fi" id="np-vibes" placeholder="nature, offbeat, adventure, spiritual, culture"/></div>
+          <div class="fg">
+            <label>Region Type</label>
+            <select class="fs" id="np-region">
+              <option value="offbeat">Offbeat / Remote</option>
+              <option value="popular">Popular</option>
+              <option value="trek">Trek Destination</option>
+              <option value="temple">Temple / Spiritual</option>
+              <option value="village">Village</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Card Color</label>
+            <div class="color-row" id="place-colors">
+              <div class="cswatch on" style="background:#d4e6da" data-c="#d4e6da" onclick="pickC('place-colors','np-color',this)"></div>
+              <div class="cswatch" style="background:#dde8d4" data-c="#dde8d4" onclick="pickC('place-colors','np-color',this)"></div>
+              <div class="cswatch" style="background:#e8d4c8" data-c="#e8d4c8" onclick="pickC('place-colors','np-color',this)"></div>
+              <div class="cswatch" style="background:#d4dce8" data-c="#d4dce8" onclick="pickC('place-colors','np-color',this)"></div>
+              <div class="cswatch" style="background:#e8e4d4" data-c="#e8e4d4" onclick="pickC('place-colors','np-color',this)"></div>
+              <div class="cswatch" style="background:#d8d4e8" data-c="#d8d4e8" onclick="pickC('place-colors','np-color',this)"></div>
+              <div class="cswatch" style="background:#d5e8d0" data-c="#d5e8d0" onclick="pickC('place-colors','np-color',this)"></div>
+              <div class="cswatch" style="background:#e4dcc8" data-c="#e4dcc8" onclick="pickC('place-colors','np-color',this)"></div>
+            </div>
+            <input type="hidden" id="np-color" value="#d4e6da"/>
+          </div>
+          <button class="btn btn-primary" onclick="addPlace()">Add Place to Site</button>
+        </div>
+      </div>
+
+      <!-- ALL PLACES LIST -->
+      <div class="panel">
+        <div class="panel-title">🏔 All Places on Site <span style="font-size:12px;font-weight:400;color:var(--stone)" id="places-count"></span></div>
+        <div id="places-list"></div>
+      </div>
+    </div>
+
+    <!-- DATE FORECAST -->
+    <div class="page" id="page-forecast">
+      <div class="ph"><div class="ph-title">Date Forecast</div><div class="ph-sub">Check crowd, weather, landslide & snowfall forecast for any place on any date</div></div>
+      <div class="panel">
+        <div class="panel-title">🗓 Check Travel Date</div>
+        <div class="row2">
+          <div class="fg">
+            <label>Select Place</label>
+            <select class="fs" id="fc-place" onchange="runForecast()">
+              <option value="">-- Select a place --</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Travel Date</label>
+            <input type="date" class="fi" id="fc-date" onchange="runForecast()"/>
+          </div>
+        </div>
+        <div class="fg">
+          <label>Number of days staying</label>
+          <input type="number" class="fi" id="fc-days" value="2" min="1" max="14" oninput="runForecast()"/>
+        </div>
+        <button class="btn btn-primary" onclick="runForecast()">🔍 Check Forecast</button>
+      </div>
+
+      <!-- FORECAST RESULT -->
+      <div class="forecast-panel" id="forecast-result">
+        <div class="fp-header" id="fp-title"></div>
+        <div class="fp-grid" id="fp-grid"></div>
+        <div id="fp-advice"></div>
+        <!-- SEASONAL CHART -->
+        <div style="margin-top:20px">
+          <div style="font-size:13px;font-weight:600;color:var(--pine);margin-bottom:8px">Year-round conditions for <span id="fp-place-name"></span></div>
+          <div style="display:flex;gap:4px;margin-bottom:4px">
+            <div style="width:80px;font-size:11px;color:var(--stone)"></div>
+            <div class="season-grid" style="flex:1" id="season-bar"></div>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap">
+            <span style="font-size:11px;display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:3px;background:#3aab66;display:inline-block"></span>Best time</span>
+            <span style="font-size:11px;display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:3px;background:#e8a020;display:inline-block"></span>Manageable</span>
+            <span style="font-size:11px;display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:3px;background:#5da8d4;display:inline-block"></span>Snow likely</span>
+            <span style="font-size:11px;display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:3px;background:#4a7cb5;display:inline-block"></span>Heavy rain/landslide risk</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAYS -->
+    <div class="page" id="page-stays">
+      <div class="ph"><div class="ph-title">Stays</div><div class="ph-sub">Homestays, guesthouses, hotels — with WhatsApp booking</div></div>
+      <div class="success" id="stays-ok">✅ Stays updated!</div>
+      <div class="panel">
+        <div class="panel-title">🏡 All Stays</div>
+        <div id="stays-list"></div>
+        <button class="add-trigger" onclick="tog('add-stay-form')">+ Add New Stay</button>
+        <div class="add-form" id="add-stay-form">
+          <div class="add-form-title">Add New Stay</div>
+          <div class="fg"><label>Stay Name *</label><input class="fi" id="ns-name" placeholder="e.g. Mountain Echo Homestay"/></div>
+          <div class="row2">
+            <div class="fg"><label>Location *</label><input class="fi" id="ns-loc" placeholder="e.g. Barot, Mandi"/></div>
+            <div class="fg"><label>Type</label><select class="fs" id="ns-type"><option>Homestay</option><option>Guesthouse</option><option>Hotel</option><option>Eco Stay</option><option>Camping</option><option>Cottage</option></select></div>
+          </div>
+          <div class="row2">
+            <div class="fg"><label>Price/Night *</label><input class="fi" id="ns-price" placeholder="₹1,200/night"/></div>
+            <div class="fg"><label>Rating</label><input class="fi" id="ns-rating" placeholder="4.8 · 42 reviews"/></div>
+          </div>
+          <div class="fg"><label>WhatsApp Number *</label><input class="fi" id="ns-wa" placeholder="+91 98050 12345"/><div class="fhint">Customers tap "Book" → WhatsApp opens with pre-filled message</div></div>
+          <div class="row2">
+            <div class="fg"><label>Emoji</label><input class="fi" id="ns-emoji" placeholder="🏡" style="font-size:18px"/></div>
+            <div class="fg"><label>Color</label>
+              <div class="color-row" id="stay-colors">
+                <div class="cswatch on" style="background:#e1f0e8" data-c="#e1f0e8" onclick="pickC('stay-colors','ns-color',this)"></div>
+                <div class="cswatch" style="background:#f0e8d4" data-c="#f0e8d4" onclick="pickC('stay-colors','ns-color',this)"></div>
+                <div class="cswatch" style="background:#e8e0f0" data-c="#e8e0f0" onclick="pickC('stay-colors','ns-color',this)"></div>
+                <div class="cswatch" style="background:#f0dcd4" data-c="#f0dcd4" onclick="pickC('stay-colors','ns-color',this)"></div>
+                <div class="cswatch" style="background:#dce8f0" data-c="#dce8f0" onclick="pickC('stay-colors','ns-color',this)"></div>
+              </div>
+              <input type="hidden" id="ns-color" value="#e1f0e8"/>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-primary" onclick="addStay()">Add Stay</button>
+            <button class="btn btn-outline" onclick="tog('add-stay-form')">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALTERNATIVES -->
+    <div class="page" id="page-alternatives">
+      <div class="ph"><div class="ph-title">Alternatives</div><div class="ph-sub">Suggest quieter alternatives for overcrowded places</div></div>
+      <div class="success" id="alts-ok">✅ Saved!</div>
+      <div class="panel">
+        <div class="panel-title">🔀 All Suggestions</div>
+        <div id="alts-list"></div>
+        <button class="add-trigger" onclick="tog('add-alt-form')">+ Add Suggestion</button>
+        <div class="add-form" id="add-alt-form">
+          <div class="row2">
+            <div class="fg"><label>Instead of (crowded)</label><input class="fi" id="na-for" placeholder="Kasol"/></div>
+            <div class="fg"><label>Go to (alternative)</label><input class="fi" id="na-name" placeholder="Tirthan Valley"/></div>
+          </div>
+          <div class="fg"><label>Why it's better</label><textarea class="ft" id="na-desc" placeholder="Same river vibe, 4x fewer visitors..."></textarea></div>
+          <div class="row2">
+            <div class="fg"><label>Crowd %</label><input class="fi" id="na-crowd" placeholder="22%"/></div>
+            <div class="fg"><label>Vibe Tag</label><input class="fi" id="na-vibe" placeholder="Offbeat nature"/></div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-primary" onclick="addAlt()">Add</button>
+            <button class="btn btn-outline" onclick="tog('add-alt-form')">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="page" id="page-content">
+      <div class="ph"><div class="ph-title">Text & Content</div><div class="ph-sub">Edit all text on the public website</div></div>
+      <div class="success" id="content-ok">✅ Content saved!</div>
+      <div class="panel">
+        <div class="panel-title">🏠 Hero Section</div>
+        <div class="fg"><label>Site Name</label><input class="fi" id="c-name"/></div>
+        <div class="fg"><label>Small tag above headline</label><input class="fi" id="c-eyebrow"/></div>
+        <div class="fg"><label>Main Headline</label><input class="fi" id="c-title"/></div>
+        <div class="fg"><label>Subtitle</label><textarea class="ft" id="c-sub"></textarea></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">📊 Stats Bar</div>
+        <p style="font-size:13px;color:var(--stone);margin-bottom:12px">Format: <code>Number | Label</code> — one per line</p>
+        <textarea class="ft" id="c-stats" style="min-height:90px;font-family:monospace;font-size:13px"></textarea>
+      </div>
+      <div class="panel">
+        <div class="panel-title">📖 About</div>
+        <textarea class="ft" id="c-about" style="min-height:90px"></textarea>
+      </div>
+      <div class="panel">
+        <div class="panel-title">👣 Footer</div>
+        <input class="fi" id="c-footer"/>
+      </div>
+      <button class="btn btn-primary" onclick="saveContent()">💾 Save All Content</button>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="ph"><div class="ph-title">Settings</div></div>
+      <div class="success" id="settings-ok">✅ Saved!</div>
+      <div class="panel">
+        <div class="panel-title">🔐 Change Password</div>
+        <div class="fg"><label>Current Password</label><input type="password" class="fi" id="s-cur"/></div>
+        <div class="fg"><label>New Password</label><input type="password" class="fi" id="s-new" placeholder="min 8 characters"/></div>
+        <div class="fg"><label>Confirm</label><input type="password" class="fi" id="s-con"/></div>
+        <button class="btn btn-primary" onclick="changePW()">Update Password</button>
+        <div id="pw-err" style="color:var(--red);font-size:13px;margin-top:8px;display:none"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">🗄 Data Backup</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-outline" onclick="exportD()">📥 Export Backup</button>
+          <button class="btn btn-outline" onclick="document.getElementById('importFile').click()">📤 Import Backup</button>
+          <button class="btn btn-danger" onclick="resetD()">⚠ Reset Defaults</button>
+        </div>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importD(this)"/>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// HIMACHAL DESTINATION DATABASE — all 12 districts
+// ═══════════════════════════════════════════════
+const HP_DB = [
+  // ── KULLU: MANALI & UPPER REGION ──
+  {name:"Manali",district:"Kullu",vibes:["adventure","nature","culture"],altitude:"2050m",bestTime:"Mar, Oct–Nov",famousFor:"Rohtang Pass, Solang Valley, Old Manali cafes",type:"popular",emoji:"🏔️",crowd:92,color:"#e0d4e8",zone:"kullu"},
+  {name:"Old Manali",district:"Kullu",vibes:["culture","nature"],altitude:"2050m",bestTime:"Mar–Apr, Oct–Nov",famousFor:"Manu temple, hippie cafes, chill vibe",type:"popular",emoji:"☕",crowd:75,color:"#e4dcc8",zone:"kullu"},
+  {name:"Solang Valley",district:"Kullu",vibes:["adventure"],altitude:"2480m",bestTime:"Jan–Feb (snow), May–Sep",famousFor:"Paragliding, zorbing, cable car, snow activities",type:"popular",emoji:"🪂",crowd:82,color:"#d4dce8",zone:"kullu"},
+  {name:"Rohtang Pass",district:"Kullu",vibes:["adventure","nature"],altitude:"3978m",bestTime:"May–Oct",famousFor:"Gateway to Lahaul/Spiti, snow year round, dramatic views",type:"popular",emoji:"⛰️",crowd:78,color:"#dde8d4",zone:"kullu"},
+  {name:"Gulaba",district:"Kullu",vibes:["nature","offbeat"],altitude:"3100m",bestTime:"May–Oct",famousFor:"Snow point before Rohtang, quieter than main pass",type:"offbeat",emoji:"❄️",crowd:35,color:"#d4dce8",zone:"kullu"},
+  {name:"Marhi",district:"Kullu",vibes:["nature"],altitude:"3300m",bestTime:"May–Oct",famousFor:"Halting point before Rohtang, dhabas, glacier views",type:"offbeat",emoji:"🏕️",crowd:28,color:"#dde8d4",zone:"kullu"},
+  {name:"Kothi",district:"Kullu",vibes:["nature","offbeat"],altitude:"2500m",bestTime:"Apr–Oct",famousFor:"Beas river viewpoint, glacier views, peaceful",type:"offbeat",emoji:"🌊",crowd:22,color:"#d4e6da",zone:"kullu"},
+  {name:"Vashisht",district:"Kullu",vibes:["spiritual","culture"],altitude:"2100m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"Hot water springs, ancient Vashisht temple",type:"temple",emoji:"♨️",crowd:55,color:"#e8d8d0",zone:"kullu"},
+  {name:"Naggar",district:"Kullu",vibes:["culture","nature"],altitude:"1760m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"Naggar Castle, Roerich Art Gallery, old-world charm",type:"popular",emoji:"🏰",crowd:45,color:"#e4dcc8",zone:"kullu"},
+  {name:"Jagatsukh",district:"Kullu",vibes:["spiritual","culture","offbeat"],altitude:"1830m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"Ancient Shiva temple, traditional village, pre-Manali capital",type:"village",emoji:"🛕",crowd:18,color:"#e8e4d4",zone:"kullu"},
+  {name:"Sethan",district:"Kullu",vibes:["offbeat","adventure","nature"],altitude:"2700m",bestTime:"Dec–Feb (snow), Jun–Sep",famousFor:"Hidden snow village, skiing potential, Israeli culture",type:"offbeat",emoji:"❄️",crowd:20,color:"#d4dce8",zone:"kullu"},
+  {name:"Hamta Pass",district:"Kullu",vibes:["adventure","trek"],altitude:"4270m",bestTime:"Jun–Sep",famousFor:"Classic trek connecting Manali to Spiti, dramatic landscapes",type:"trek",emoji:"🥾",crowd:30,color:"#dde8d4",zone:"kullu"},
+  {name:"Beas Kund",district:"Kullu",vibes:["adventure","trek","nature"],altitude:"3700m",bestTime:"Jun–Sep",famousFor:"Glacial lake at source of Beas river, camping",type:"trek",emoji:"🏔️",crowd:25,color:"#d4dce8",zone:"kullu"},
+  {name:"Bijli Mahadev",district:"Kullu",vibes:["spiritual","adventure"],altitude:"2460m",bestTime:"Mar–Jun, Sep–Oct",famousFor:"Ancient temple, lightning-struck Shivling, Kullu valley views",type:"temple",emoji:"⚡",crowd:38,color:"#e8e4d4",zone:"kullu"},
+  {name:"Rahala Waterfalls",district:"Kullu",vibes:["nature"],altitude:"2500m",bestTime:"Jun–Sep",famousFor:"Waterfall near Manali on Rohtang road, short stop",type:"offbeat",emoji:"💧",crowd:42,color:"#d4e6da",zone:"kullu"},
+  {name:"Dhundhi",district:"Kullu",vibes:["offbeat","nature","adventure"],altitude:"2800m",bestTime:"May–Sep",famousFor:"Secluded camping near Manali, snow in winters",type:"offbeat",emoji:"⛺",crowd:15,color:"#d5e8d0",zone:"kullu"},
+  {name:"Bhrigu Lake",district:"Kullu",vibes:["trek","nature"],altitude:"4300m",bestTime:"Jun–Sep",famousFor:"One of highest alpine lakes in HP, short but steep trek",type:"trek",emoji:"🌊",crowd:28,color:"#d4dce8",zone:"kullu"},
+  {name:"Chanderkhani Pass",district:"Kullu",vibes:["trek","adventure","offbeat"],altitude:"3660m",bestTime:"May–Sep",famousFor:"Trek connecting Malana to Naggar, Himalayan panorama",type:"trek",emoji:"⛰️",crowd:12,color:"#dde8d4",zone:"kullu"},
+  // ── KULLU: PARVATI VALLEY ──
+  {name:"Kasol",district:"Kullu",vibes:["adventure","nature","culture"],altitude:"1640m",bestTime:"Oct–Nov",famousFor:"Little Israel, Parvati river, backpacker hub",type:"popular",emoji:"🏕️",crowd:88,color:"#e8d4c8",zone:"parvati"},
+  {name:"Manikaran",district:"Kullu",vibes:["spiritual"],altitude:"1737m",bestTime:"Oct–Mar",famousFor:"Sikh gurudwara, hot springs, pilgrimage site",type:"temple",emoji:"🙏",crowd:65,color:"#e8d8d0",zone:"parvati"},
+  {name:"Kheerganga",district:"Kullu",vibes:["adventure","spiritual","nature"],altitude:"2960m",bestTime:"May–Jun, Sep–Oct",famousFor:"Natural hot springs after a 12km trek, camping",type:"trek",emoji:"♨️",crowd:55,color:"#d4e6da",zone:"parvati"},
+  {name:"Tosh",district:"Kullu",vibes:["offbeat","nature"],altitude:"2400m",bestTime:"Apr–Jun, Sep–Oct",famousFor:"Remote village at valley end, snow views, peace",type:"offbeat",emoji:"🌿",crowd:28,color:"#d5e8d0",zone:"parvati"},
+  {name:"Malana",district:"Kullu",vibes:["offbeat","culture","adventure"],altitude:"2652m",bestTime:"May–Jun, Sep–Oct",famousFor:"Ancient self-governance system, unique isolated culture",type:"village",emoji:"🏘️",crowd:31,color:"#e4dcc8",zone:"parvati"},
+  {name:"Pulga",district:"Kullu",vibes:["offbeat","nature"],altitude:"2400m",bestTime:"Apr–Jun, Sep–Oct",famousFor:"Fairy-tale pine forests, remote Parvati village",type:"offbeat",emoji:"🌲",crowd:14,color:"#d4e6da",zone:"parvati"},
+  {name:"Kalga",district:"Kullu",vibes:["offbeat","nature"],altitude:"2500m",bestTime:"Apr–Jun, Sep–Oct",famousFor:"Above Pulga, absolute solitude, Himalayan silence",type:"offbeat",emoji:"🌿",crowd:10,color:"#dde8d4",zone:"parvati"},
+  {name:"Grahan",district:"Kullu",vibes:["offbeat","trek","nature"],altitude:"2800m",bestTime:"Apr–Jun, Sep–Oct",famousFor:"Very remote village, dense forest trek from Kasol",type:"offbeat",emoji:"🌲",crowd:11,color:"#d5e8d0",zone:"parvati"},
+  {name:"Chalal",district:"Kullu",vibes:["offbeat","nature"],altitude:"1650m",bestTime:"Oct–Nov, Mar–May",famousFor:"5-min trek from Kasol across bridge, quieter vibe",type:"village",emoji:"🌿",crowd:32,color:"#d4e6da",zone:"parvati"},
+  {name:"Rasol",district:"Kullu",vibes:["offbeat","trek"],altitude:"2900m",bestTime:"May–Jun, Sep–Oct",famousFor:"Remote village, challenging trek from Kasol or Tosh",type:"offbeat",emoji:"⛰️",crowd:9,color:"#dde8d4",zone:"parvati"},
+  {name:"Barshaini",district:"Kullu",vibes:["nature"],altitude:"1900m",bestTime:"Apr–Jun, Sep–Oct",famousFor:"Last motorable point for Tosh, Kalga, Pulga",type:"offbeat",emoji:"🚗",crowd:22,color:"#e4dcc8",zone:"parvati"},
+  {name:"Sar Pass",district:"Kullu",vibes:["trek","adventure"],altitude:"4250m",bestTime:"May–Jun",famousFor:"Classic snowfield trek from Kasol, Himalayan panoramas",type:"trek",emoji:"🥾",crowd:20,color:"#d4dce8",zone:"parvati"},
+  {name:"Pin Parvati Pass",district:"Kullu",vibes:["adventure","trek"],altitude:"5319m",bestTime:"Aug–Sep",famousFor:"Extreme high altitude trek connecting Kullu to Spiti",type:"trek",emoji:"🏔️",crowd:8,color:"#e0dce8",zone:"parvati"},
+  // ── KULLU: TIRTHAN & JIBHI ──
+  {name:"Jibhi",district:"Kullu",vibes:["offbeat","nature","culture"],altitude:"1680m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"Wooden architecture, Jalori Pass base, forest walks",type:"offbeat",emoji:"🌲",crowd:28,color:"#d5e8d0",zone:"tirthan"},
+  {name:"Shoja",district:"Kullu",vibes:["offbeat","nature"],altitude:"2300m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"Jalori Pass views, apple orchards, untouched peace",type:"offbeat",emoji:"🍎",crowd:18,color:"#d4e6da",zone:"tirthan"},
+  {name:"Jalori Pass",district:"Kullu",vibes:["adventure","nature","offbeat"],altitude:"3120m",bestTime:"May–Jun, Sep–Oct",famousFor:"High altitude pass, Serolsar Lake trek, panoramic views",type:"trek",emoji:"⛰️",crowd:22,color:"#dde8d4",zone:"tirthan"},
+  {name:"Sereolesar Lake",district:"Kullu",vibes:["trek","nature","spiritual"],altitude:"3100m",bestTime:"May–Jun, Sep–Oct",famousFor:"Crystal clear lake, trek from Jalori Pass, Budhi Nagin temple",type:"trek",emoji:"🌊",crowd:14,color:"#d4dce8",zone:"tirthan"},
+  {name:"Chehni Kothi",district:"Kullu",vibes:["culture","offbeat"],altitude:"2200m",bestTime:"Apr–Jun, Sep–Nov",famousFor:"One of tallest traditional wooden towers in HP, 1500 years old",type:"village",emoji:"🗼",crowd:12,color:"#e4dcc8",zone:"tirthan"},
+  {name:"Gushaini",district:"Kullu",vibes:["offbeat","nature"],altitude:"1500m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"GHNP entry point, Tirthan river base, peaceful village",type:"village",emoji:"🏡",crowd:12,color:"#dde8d4",zone:"tirthan"},
+  {name:"Shangarh",district:"Kullu",vibes:["offbeat","nature","culture"],altitude:"2200m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"Vast ancient meadow, Shangchul Mahadev temple, Himalayan views",type:"village",emoji:"🌾",crowd:16,color:"#d5e8d0",zone:"tirthan"},
+  {name:"Tirthan Valley",district:"Kullu",vibes:["nature","offbeat"],altitude:"1600m",bestTime:"Oct–Nov, Mar–Apr",famousFor:"GHNP gateway, trout fishing, crystal river, silence",type:"offbeat",emoji:"🌿",crowd:22,color:"#d4e6da",zone:"tirthan"},
+  {name:"Great Himalayan National Park",district:"Kullu",vibes:["nature","trek","offbeat"],altitude:"1500m",bestTime:"May–Jun, Sep–Oct",famousFor:"UNESCO World Heritage, 375+ bird species, snow leopards",type:"trek",emoji:"🌲",crowd:18,color:"#d4e6da",zone:"tirthan"},
+  // ── KULLU: SAINJ VALLEY ──
+  {name:"Sainj Valley",district:"Kullu",vibes:["offbeat","nature"],altitude:"1600m",bestTime:"Apr–Jun, Sep–Nov",famousFor:"Hidden gem valley, Pundrik Rishi lake, traditional villages",type:"offbeat",emoji:"🌿",crowd:10,color:"#d5e8d0",zone:"tirthan"},
+  {name:"Pundrik Rishi Lake",district:"Kullu",vibes:["spiritual","trek","offbeat"],altitude:"3100m",bestTime:"May–Jun, Sep–Oct",famousFor:"Sacred high altitude lake, rarely visited, pure nature",type:"trek",emoji:"🌊",crowd:6,color:"#d4dce8",zone:"tirthan"},
+  // ── KULLU MAIN ──
+  {name:"Kullu Town",district:"Kullu",vibes:["culture","spiritual"],altitude:"1219m",bestTime:"Oct (Dussehra), Mar–Jun",famousFor:"Raghunath temple, Dussehra festival, Sultanpur Palace",type:"popular",emoji:"🎭",crowd:58,color:"#e8d8d0",zone:"kullu"},
+  {name:"Katrain",district:"Kullu",vibes:["nature","offbeat"],altitude:"1463m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"Apple orchards, Beas river, quiet Kullu valley stay",type:"offbeat",emoji:"🍎",crowd:20,color:"#d5e8d0",zone:"kullu"},
+  {name:"Nirmand",district:"Kullu",vibes:["culture","spiritual","offbeat"],altitude:"1338m",bestTime:"Oct–Apr",famousFor:"Heritage village, ancient temples, traditional Pahari architecture",type:"village",emoji:"🛕",crowd:12,color:"#e8e4d4",zone:"kullu"},
+  // ── KANGRA ──
+  {name:"Dharamshala",district:"Kangra",vibes:["spiritual","culture","adventure"],altitude:"1457m",bestTime:"Mar–May, Sep–Nov",famousFor:"Dalai Lama temple, Tibetan culture, Triund trek",type:"popular",emoji:"🙏",crowd:71,color:"#e8d8d0",zone:"kangra"},
+  {name:"McLeod Ganj",district:"Kangra",vibes:["spiritual","culture"],altitude:"1457m",bestTime:"Mar–May, Sep–Nov",famousFor:"Little Lhasa, Tibetan market, Bhagsu waterfall",type:"popular",emoji:"🏳️",crowd:74,color:"#e8dcd4",zone:"kangra"},
+  {name:"Bhagsu Nag",district:"Kangra",vibes:["spiritual","nature"],altitude:"1500m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"Ancient Nag temple, Bhagsu waterfall, short trek",type:"temple",emoji:"💧",crowd:60,color:"#d4dce8",zone:"kangra"},
+  {name:"Triund",district:"Kangra",vibes:["adventure","nature"],altitude:"2875m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"One-day ridge trek, Dhauladhar views, camping",type:"trek",emoji:"⛺",crowd:68,color:"#d4dce8",zone:"kangra"},
+  {name:"Dharamkot",district:"Kangra",vibes:["offbeat","culture"],altitude:"1550m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"Hippie hill above McLeod, yoga retreats, quieter vibe",type:"offbeat",emoji:"🧘",crowd:38,color:"#e8d8d0",zone:"kangra"},
+  {name:"Naddi",district:"Kangra",vibes:["offbeat","nature"],altitude:"1600m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"Sunset viewpoint, Dhauladhar views, peaceful",type:"offbeat",emoji:"🌅",crowd:28,color:"#d5e8d0",zone:"kangra"},
+  {name:"Rajgundha",district:"Kangra",vibes:["offbeat","nature","adventure"],altitude:"2800m",bestTime:"May–Jun, Sep–Oct",famousFor:"Hidden meadow above Bir, complete silence, remote trek",type:"offbeat",emoji:"🌄",crowd:12,color:"#d4e6da",zone:"kangra"},
+  {name:"Bir Billing",district:"Kangra",vibes:["adventure","culture"],altitude:"1525m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"India's paragliding capital, Tibetan monasteries",type:"popular",emoji:"🪂",crowd:52,color:"#d8d4e8",zone:"kangra"},
+  {name:"Palampur",district:"Kangra",vibes:["nature","culture","offbeat"],altitude:"1220m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"Tea gardens, Dhauladhar backdrop, Baijnath temple nearby",type:"offbeat",emoji:"🍵",crowd:26,color:"#d4e8dc",zone:"kangra"},
+  {name:"Baijnath",district:"Kangra",vibes:["spiritual","culture"],altitude:"1104m",bestTime:"Oct–Mar",famousFor:"1204 AD Shiva temple, intricate stone carvings",type:"temple",emoji:"🛕",crowd:35,color:"#e8e4d4",zone:"kangra"},
+  {name:"Andretta",district:"Kangra",vibes:["culture","offbeat"],altitude:"900m",bestTime:"Oct–Mar",famousFor:"Artist village, Sobha Singh gallery, pottery tradition",type:"village",emoji:"🎨",crowd:15,color:"#e4dcc8",zone:"kangra"},
+  {name:"Kareri Lake",district:"Kangra",vibes:["trek","nature","offbeat"],altitude:"2934m",bestTime:"Apr–Jun, Sep–Oct",famousFor:"Hidden alpine lake, less crowded than Triund, stunning",type:"trek",emoji:"🏔️",crowd:18,color:"#d4dce8",zone:"kangra"},
+  {name:"Kangra Fort",district:"Kangra",vibes:["culture","spiritual"],altitude:"760m",bestTime:"Oct–Mar",famousFor:"Largest fort in Himalayas, ancient history, Banas-Manjhi confluence",type:"popular",emoji:"🏰",crowd:48,color:"#e4dcc8",zone:"kangra"},
+  {name:"Masrur Rock Temple",district:"Kangra",vibes:["culture","spiritual","offbeat"],altitude:"800m",bestTime:"Oct–Mar",famousFor:"8th century rock-cut temples, Ellora of Himachal",type:"temple",emoji:"🗿",crowd:22,color:"#e8e0d4",zone:"kangra"},
+  {name:"Jawalamukhi",district:"Kangra",vibes:["spiritual"],altitude:"610m",bestTime:"Oct–Apr",famousFor:"Temple of eternal flames, one of 51 Shaktipeethas",type:"temple",emoji:"🔥",crowd:62,color:"#e8d8d0",zone:"kangra"},
+  {name:"Pong Dam Wetlands",district:"Kangra",vibes:["nature","offbeat"],altitude:"430m",bestTime:"Nov–Feb",famousFor:"Ramsar wetland, bar-headed geese, 220+ migratory bird species",type:"offbeat",emoji:"🦢",crowd:20,color:"#d4dce8",zone:"kangra"},
+  {name:"Indrahar Pass",district:"Kangra",vibes:["adventure","trek"],altitude:"4342m",bestTime:"Jun–Sep",famousFor:"Connects Dharamshala to Chamba, challenging high altitude trek",type:"trek",emoji:"⛰️",crowd:15,color:"#dde8d4",zone:"kangra"},
+  {name:"Nurpur",district:"Kangra",vibes:["culture","offbeat"],altitude:"500m",bestTime:"Oct–Mar",famousFor:"Nurpur Fort, Brij Raj Swami temple, historical significance",type:"offbeat",emoji:"🏛️",crowd:18,color:"#e4dcc8",zone:"kangra"},
+  // ── SHIMLA ──
+  {name:"Shimla",district:"Shimla",vibes:["culture","nature"],altitude:"2206m",bestTime:"Mar, Oct–Nov",famousFor:"Mall Road, toy train, colonial architecture, Jakhu temple",type:"popular",emoji:"🚂",crowd:85,color:"#e8dcd4",zone:"shimla"},
+  {name:"Kufri",district:"Shimla",vibes:["adventure","nature"],altitude:"2600m",bestTime:"Jan–Feb (snow), Apr–Jun",famousFor:"Skiing in winter, Himalayan views, adventure park",type:"popular",emoji:"⛷️",crowd:65,color:"#d4dce8",zone:"shimla"},
+  {name:"Chail",district:"Shimla",vibes:["culture","nature","offbeat"],altitude:"2250m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"World's highest cricket ground, Chail Palace, wildlife",type:"offbeat",emoji:"🏏",crowd:27,color:"#d8e4d4",zone:"shimla"},
+  {name:"Narkanda",district:"Shimla",vibes:["nature","offbeat"],altitude:"2708m",bestTime:"Jan–Feb (snow), May–Jun, Sep–Oct",famousFor:"Apple orchards, Hatu Peak, skiing potential",type:"offbeat",emoji:"🍎",crowd:32,color:"#d4dce8",zone:"shimla"},
+  {name:"Hatu Peak",district:"Shimla",vibes:["trek","nature","offbeat"],altitude:"3400m",bestTime:"May–Jun, Sep–Oct",famousFor:"Highest peak near Shimla, Hatu Mata temple, 360° Himalayan views",type:"trek",emoji:"🗻",crowd:18,color:"#e0dce8",zone:"shimla"},
+  {name:"Thanedar",district:"Shimla",vibes:["offbeat","nature"],altitude:"2350m",bestTime:"Apr–Jun, Sep–Oct",famousFor:"Original HP apple orchards, Stokes farm, St Mary's Church",type:"village",emoji:"🍎",crowd:14,color:"#d5e8d0",zone:"shimla"},
+  {name:"Rohru",district:"Shimla",vibes:["offbeat","nature"],altitude:"1525m",bestTime:"Apr–Jun, Sep–Oct",famousFor:"Pabbar river trout fishing, apple belt, unexplored valley",type:"offbeat",emoji:"🎣",crowd:18,color:"#d4e6da",zone:"shimla"},
+  {name:"Chanshal Pass",district:"Shimla",vibes:["adventure","offbeat","nature"],altitude:"4520m",bestTime:"Jun–Sep",famousFor:"Highest pass in Shimla, snow June–July, dramatic views",type:"trek",emoji:"⛰️",crowd:12,color:"#dde8d4",zone:"shimla"},
+  {name:"Sarahan",district:"Shimla",vibes:["spiritual","culture","nature"],altitude:"2165m",bestTime:"Apr–Jun, Sep–Nov",famousFor:"Bhimakali temple, gateway to Kinnaur, mixed Hindu-Buddhist art",type:"temple",emoji:"🛕",crowd:30,color:"#e8e4d4",zone:"shimla"},
+  {name:"Jubbal",district:"Shimla",vibes:["culture","offbeat"],altitude:"1900m",bestTime:"Apr–Jun, Sep–Oct",famousFor:"Jubbal Palace, royal Shimla history, apple orchards",type:"offbeat",emoji:"🏰",crowd:15,color:"#e4dcc8",zone:"shimla"},
+  {name:"Tatta Pani",district:"Shimla",vibes:["spiritual","nature"],altitude:"655m",bestTime:"Oct–Mar",famousFor:"Hot springs on Sutlej river, pilgrimage spot",type:"offbeat",emoji:"♨️",crowd:28,color:"#e8d8d0",zone:"shimla"},
+  {name:"Naldhera",district:"Shimla",vibes:["offbeat","nature"],altitude:"2044m",bestTime:"Mar–Jun, Sep–Oct",famousFor:"Oldest golf course in India, Nag temple, Shimla weekend escape",type:"offbeat",emoji:"⛳",crowd:22,color:"#d5e8d0",zone:"shimla"},
+  {name:"Mashobra",district:"Shimla",vibes:["offbeat","nature"],altitude:"2149m",bestTime:"Mar–Jun, Sep–Oct",famousFor:"Quiet village near Shimla, Craignano picnic spot",type:"offbeat",emoji:"🌲",crowd:20,color:"#d4e6da",zone:"shimla"},
+  {name:"Shoghi",district:"Shimla",vibes:["offbeat"],altitude:"1519m",bestTime:"Oct–May",famousFor:"Quiet stay near Shimla, off the tourist radar",type:"offbeat",emoji:"🏡",crowd:14,color:"#dde8d4",zone:"shimla"},
+  // ── CHAMBA ──
+  {name:"Dalhousie",district:"Chamba",vibes:["culture","nature"],altitude:"2036m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"Khajjiar nearby, Panchpula, colonial architecture",type:"popular",emoji:"🌄",crowd:48,color:"#dcd8e8",zone:"chamba"},
+  {name:"Khajjiar",district:"Chamba",vibes:["nature","offbeat"],altitude:"1920m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"Mini Switzerland meadow, deodar forest, Khajji Nag temple",type:"offbeat",emoji:"🌿",crowd:33,color:"#d4e8d8",zone:"chamba"},
+  {name:"Chamba Town",district:"Chamba",vibes:["culture","spiritual"],altitude:"996m",bestTime:"Oct–Mar",famousFor:"Chaugan ground, Lakshmi Narayan temple group, ancient art",type:"popular",emoji:"🎭",crowd:40,color:"#e8d8d0",zone:"chamba"},
+  {name:"Bharmour",district:"Chamba",vibes:["spiritual","culture","offbeat"],altitude:"2195m",bestTime:"Jun–Sep",famousFor:"84 ancient Chaurasi temples, Gaddi tribe culture",type:"temple",emoji:"🛕",crowd:20,color:"#e8e4d4",zone:"chamba"},
+  {name:"Manimahesh Lake",district:"Chamba",vibes:["spiritual","trek"],altitude:"4080m",bestTime:"Aug–Sep (pilgrimage)",famousFor:"Sacred Shiva lake, Manimahesh Kailash peak, annual pilgrimage",type:"trek",emoji:"🌊",crowd:55,color:"#d4dce8",zone:"chamba"},
+  {name:"Sach Pass",district:"Chamba",vibes:["adventure","offbeat"],altitude:"4390m",bestTime:"Jul–Sep",famousFor:"Extreme high pass connecting Chamba to Pangi, snow July",type:"offbeat",emoji:"⛰️",crowd:8,color:"#e0dce8",zone:"chamba"},
+  {name:"Pangi Valley",district:"Chamba",vibes:["offbeat","adventure"],altitude:"2700m",bestTime:"Jun–Sep",famousFor:"Extreme remote valley, Chenab river, cut off in winter 8 months",type:"offbeat",emoji:"🏔️",crowd:5,color:"#e4dcc8",zone:"chamba"},
+  {name:"Kalatop Wildlife Sanctuary",district:"Chamba",vibes:["nature","offbeat"],altitude:"2400m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"Dense deodar forest, leopard territory, 2km from Dalhousie",type:"offbeat",emoji:"🐆",crowd:18,color:"#d4e6da",zone:"chamba"},
+  {name:"Dainkund Peak",district:"Chamba",vibes:["adventure","nature"],altitude:"2755m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"Highest peak in Dalhousie, singing hill, panoramic views",type:"trek",emoji:"🗻",crowd:22,color:"#dde8d4",zone:"chamba"},
+  // ── LAHAUL & SPITI ──
+  {name:"Spiti Valley",district:"Lahaul & Spiti",vibes:["adventure","spiritual","offbeat"],altitude:"3800m",bestTime:"Jun–Sep",famousFor:"Key Monastery, Chandratal Lake, Pin Valley",type:"offbeat",emoji:"⛩️",crowd:38,color:"#e8e4d4",zone:"spiti"},
+  {name:"Kaza",district:"Lahaul & Spiti",vibes:["offbeat","culture"],altitude:"3800m",bestTime:"Jun–Sep",famousFor:"Spiti HQ, marketplace, base for all Spiti treks",type:"offbeat",emoji:"🏘️",crowd:35,color:"#e4dcc8",zone:"spiti"},
+  {name:"Key Monastery",district:"Lahaul & Spiti",vibes:["spiritual","offbeat"],altitude:"4166m",bestTime:"Jun–Sep",famousFor:"1000-year-old monastery on dramatic cliff",type:"temple",emoji:"⛩️",crowd:40,color:"#e8e4d4",zone:"spiti"},
+  {name:"Chandratal Lake",district:"Lahaul & Spiti",vibes:["trek","nature","offbeat"],altitude:"4300m",bestTime:"Jul–Sep",famousFor:"Crescent shaped high altitude lake, camping, stargazing",type:"trek",emoji:"🌙",crowd:42,color:"#d4dce8",zone:"spiti"},
+  {name:"Kibber",district:"Lahaul & Spiti",vibes:["offbeat","nature"],altitude:"4205m",bestTime:"Jun–Sep",famousFor:"High motorable village, snow leopard sightings",type:"village",emoji:"🐆",crowd:22,color:"#e0dce8",zone:"spiti"},
+  {name:"Tabo Monastery",district:"Lahaul & Spiti",vibes:["spiritual","culture"],altitude:"3050m",bestTime:"Jun–Sep",famousFor:"1000+ year old monastery, Ajanta of Himalayas, ancient murals",type:"temple",emoji:"🏛️",crowd:30,color:"#e8d8d0",zone:"spiti"},
+  {name:"Dhankar",district:"Lahaul & Spiti",vibes:["spiritual","offbeat"],altitude:"3894m",bestTime:"Jun–Sep",famousFor:"Village on a cliff edge, ancient fort-monastery, Dhankar Lake",type:"village",emoji:"🏔️",crowd:18,color:"#e4dcc8",zone:"spiti"},
+  {name:"Langza",district:"Lahaul & Spiti",vibes:["offbeat","spiritual"],altitude:"4400m",bestTime:"Jun–Sep",famousFor:"Marine fossils at high altitude, giant Buddha statue",type:"village",emoji:"🪨",crowd:18,color:"#e4dcc8",zone:"spiti"},
+  {name:"Hikkim",district:"Lahaul & Spiti",vibes:["offbeat"],altitude:"4440m",bestTime:"Jun–Sep",famousFor:"World's highest post office — send a postcard from here",type:"village",emoji:"📮",crowd:20,color:"#d4dce8",zone:"spiti"},
+  {name:"Komic",district:"Lahaul & Spiti",vibes:["offbeat"],altitude:"4587m",bestTime:"Jun–Sep",famousFor:"Highest motorable village in Asia, ancient monastery",type:"village",emoji:"🏡",crowd:14,color:"#e0dce8",zone:"spiti"},
+  {name:"Pin Valley",district:"Lahaul & Spiti",vibes:["adventure","nature","offbeat"],altitude:"3650m",bestTime:"Jun–Sep",famousFor:"National park, snow leopards, ibex, pristine cold desert",type:"trek",emoji:"🐆",crowd:16,color:"#dde8d4",zone:"spiti"},
+  {name:"Chicham Bridge",district:"Lahaul & Spiti",vibes:["adventure","offbeat"],altitude:"4200m",bestTime:"Jun–Sep",famousFor:"Highest bridge in Asia, dramatic gorge, photo stop",type:"offbeat",emoji:"🌉",crowd:25,color:"#d4dce8",zone:"spiti"},
+  {name:"Lahaul Valley",district:"Lahaul & Spiti",vibes:["offbeat","spiritual","nature"],altitude:"3100m",bestTime:"Jun–Sep",famousFor:"Triloknath temple, Chandrabhaga river, wildflowers",type:"offbeat",emoji:"🌸",crowd:22,color:"#dce4e8",zone:"lahaul"},
+  {name:"Sissu",district:"Lahaul & Spiti",vibes:["nature","offbeat"],altitude:"3100m",bestTime:"Jun–Sep",famousFor:"Waterfall, green meadows, Atal Tunnel base",type:"offbeat",emoji:"💧",crowd:28,color:"#d4e6da",zone:"lahaul"},
+  {name:"Keylong",district:"Lahaul & Spiti",vibes:["offbeat"],altitude:"3100m",bestTime:"Jun–Sep",famousFor:"Lahaul district HQ, Shashur monastery, base for Baralacha",type:"offbeat",emoji:"🏘️",crowd:20,color:"#e4dcc8",zone:"lahaul"},
+  {name:"Jispa",district:"Lahaul & Spiti",vibes:["adventure","nature"],altitude:"3200m",bestTime:"Jun–Sep",famousFor:"Campsite on Manali-Leh highway, river camping",type:"offbeat",emoji:"⛺",crowd:25,color:"#d4e6da",zone:"lahaul"},
+  {name:"Triloknath Temple",district:"Lahaul & Spiti",vibes:["spiritual","culture"],altitude:"2760m",bestTime:"Jun–Sep",famousFor:"Unique temple worshipped by both Hindus and Buddhists",type:"temple",emoji:"🛕",crowd:22,color:"#e8e4d4",zone:"lahaul"},
+  {name:"Sarchu",district:"Lahaul & Spiti",vibes:["adventure"],altitude:"4290m",bestTime:"Jun–Sep",famousFor:"Tent city on Manali-Leh highway, high altitude camping",type:"offbeat",emoji:"🏕️",crowd:30,color:"#e0dce8",zone:"lahaul"},
+  {name:"Suraj Tal",district:"Lahaul & Spiti",vibes:["trek","nature","offbeat"],altitude:"4950m",bestTime:"Jul–Sep",famousFor:"Lake of Sun God, one of highest lakes in India",type:"offbeat",emoji:"☀️",crowd:18,color:"#d4dce8",zone:"lahaul"},
+  {name:"Kunzum Pass",district:"Lahaul & Spiti",vibes:["adventure","offbeat"],altitude:"4551m",bestTime:"Jun–Sep",famousFor:"Gateway from Lahaul to Spiti, Kunzum Devi temple",type:"offbeat",emoji:"⛰️",crowd:28,color:"#dde8d4",zone:"spiti"},
+  // ── KINNAUR ──
+  {name:"Chitkul",district:"Kinnaur",vibes:["offbeat","nature","adventure"],altitude:"3450m",bestTime:"May–Oct",famousFor:"Last Indian village before Tibet, Baspa river, apple orchards",type:"offbeat",emoji:"🍎",crowd:24,color:"#e8e4dc",zone:"kinnaur"},
+  {name:"Kalpa",district:"Kinnaur",vibes:["nature","offbeat","spiritual"],altitude:"2960m",bestTime:"Apr–Jun, Sep–Oct",famousFor:"Kinner Kailash views, apple orchards, Kinnaur Kailash circuit",type:"offbeat",emoji:"🏔️",crowd:19,color:"#dce8e4",zone:"kinnaur"},
+  {name:"Sangla Valley",district:"Kinnaur",vibes:["nature","offbeat"],altitude:"2680m",bestTime:"Apr–Jun, Sep–Oct",famousFor:"Baspa valley, Kamru Fort, apple orchards, old-world charm",type:"offbeat",emoji:"🌾",crowd:26,color:"#d5e8d0",zone:"kinnaur"},
+  {name:"Nako Village",district:"Kinnaur",vibes:["spiritual","offbeat"],altitude:"3625m",bestTime:"May–Oct",famousFor:"High altitude lake, ancient monastery, traditional Kinnauri life",type:"village",emoji:"🏔️",crowd:14,color:"#e4dcc8",zone:"kinnaur"},
+  {name:"Rakcham",district:"Kinnaur",vibes:["offbeat","nature"],altitude:"3100m",bestTime:"May–Oct",famousFor:"Between Sangla and Chitkul, birch forests, apple orchards",type:"village",emoji:"🌲",crowd:10,color:"#dde8d4",zone:"kinnaur"},
+  {name:"Kinner Kailash Trek",district:"Kinnaur",vibes:["spiritual","adventure","trek"],altitude:"6050m",bestTime:"Jul–Sep",famousFor:"Circumambulation of sacred Kinner Kailash peak",type:"trek",emoji:"🙏",crowd:12,color:"#e0dce8",zone:"kinnaur"},
+  {name:"Bhaba Valley",district:"Kinnaur",vibes:["trek","nature","offbeat"],altitude:"2700m",bestTime:"Jun–Sep",famousFor:"Greenest valley in Kinnaur, Bhaba Pass trek to Pin Valley",type:"trek",emoji:"🌿",crowd:10,color:"#d4e6da",zone:"kinnaur"},
+  {name:"Ribba",district:"Kinnaur",vibes:["culture","offbeat"],altitude:"2700m",bestTime:"Aug–Oct",famousFor:"Kinnauri grape wine (Angoori), traditional culture",type:"village",emoji:"🍇",crowd:8,color:"#e4dcc8",zone:"kinnaur"},
+  {name:"Pooh",district:"Kinnaur",vibes:["offbeat","adventure"],altitude:"2840m",bestTime:"May–Oct",famousFor:"Remote village near China border, Kinnaur tribal life",type:"village",emoji:"🏔️",crowd:6,color:"#e8e4d4",zone:"kinnaur"},
+  {name:"Khab",district:"Kinnaur",vibes:["offbeat","nature"],altitude:"2000m",bestTime:"May–Oct",famousFor:"Dramatic confluence of Spiti and Sutlej rivers",type:"offbeat",emoji:"🌊",crowd:10,color:"#d4dce8",zone:"kinnaur"},
+  // ── MANDI ──
+  {name:"Prashar Lake",district:"Mandi",vibes:["spiritual","nature"],altitude:"2730m",bestTime:"Jun–Jul, Sep",famousFor:"Floating island, 14th-century pagoda temple, Himalayan views",type:"offbeat",emoji:"🌊",crowd:44,color:"#d4dce8",zone:"mandi"},
+  {name:"Barot",district:"Mandi",vibes:["nature","offbeat","culture"],altitude:"1800m",bestTime:"May–Jun, Sep–Oct",famousFor:"Trout fishing, Uhl river, dense pine forests, no tourist buses",type:"offbeat",emoji:"🏕️",crowd:18,color:"#dde8d4",zone:"mandi"},
+  {name:"Shikari Devi",district:"Mandi",vibes:["spiritual","adventure","offbeat"],altitude:"3360m",bestTime:"May–Jun, Sep–Oct",famousFor:"Roofless ancient temple, alpine forest, panoramic views",type:"temple",emoji:"⛰️",crowd:14,color:"#e8e0d4",zone:"mandi"},
+  {name:"Janjheli",district:"Mandi",vibes:["offbeat","nature"],altitude:"2150m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"Lush meadows, Shikari Devi base, untouched green valleys",type:"offbeat",emoji:"🌿",crowd:11,color:"#d4e6da",zone:"mandi"},
+  {name:"Karsog Valley",district:"Mandi",vibes:["offbeat","nature","culture"],altitude:"1400m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"Apple orchards, Mamleshwar Mahadev temple, zero tourist chaos",type:"offbeat",emoji:"🍎",crowd:9,color:"#d5e8d0",zone:"mandi"},
+  {name:"Thachi Valley",district:"Mandi",vibes:["offbeat","nature"],altitude:"1800m",bestTime:"Apr–Jun, Sep–Oct",famousFor:"Remote apple valley, traditional Pahari villages, pristine",type:"offbeat",emoji:"🌲",crowd:8,color:"#dde8d4",zone:"mandi"},
+  {name:"Rewalsar Lake",district:"Mandi",vibes:["spiritual"],altitude:"1360m",bestTime:"Oct–Mar",famousFor:"Sacred to Hindus, Sikhs, and Buddhists — three faiths one lake",type:"temple",emoji:"🪷",crowd:42,color:"#e8d8d0",zone:"mandi"},
+  {name:"Kamrunag",district:"Mandi",vibes:["spiritual","trek","offbeat"],altitude:"3334m",bestTime:"Jun, Sep",famousFor:"Remote deity lake, annual fair, treasure coins in water",type:"trek",emoji:"🌊",crowd:16,color:"#d4dce8",zone:"mandi"},
+  {name:"Sundernagar",district:"Mandi",vibes:["offbeat"],altitude:"900m",bestTime:"Oct–Mar",famousFor:"Artificial Sukh Sagar lake, Pandoh Dam viewpoint",type:"offbeat",emoji:"💧",crowd:20,color:"#d4dce8",zone:"mandi"},
+  // ── SOLAN ──
+  {name:"Kasauli",district:"Solan",vibes:["culture","nature"],altitude:"1795m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"Monkey Point, colonial walks, craft beer, sunset views",type:"popular",emoji:"🌅",crowd:56,color:"#e8d8d0",zone:"solan"},
+  {name:"Dagshai",district:"Solan",vibes:["culture","offbeat"],altitude:"1734m",bestTime:"Oct–Mar",famousFor:"British era cantonment, jail museum, colonial relics",type:"offbeat",emoji:"🏛️",crowd:12,color:"#e4dcc8",zone:"solan"},
+  {name:"Karol Tibba",district:"Solan",vibes:["trek","nature","offbeat"],altitude:"2400m",bestTime:"Oct–Mar",famousFor:"Half-day forest trek from Solan, Shivalik views",type:"trek",emoji:"🌲",crowd:10,color:"#d4e6da",zone:"solan"},
+  {name:"Bon Monastery",district:"Solan",vibes:["spiritual","culture"],altitude:"1800m",bestTime:"Oct–Apr",famousFor:"Yungdrung Bon monastery, rare Bon tradition, peaceful",type:"temple",emoji:"⛩️",crowd:15,color:"#e8e4d4",zone:"solan"},
+  {name:"Barog",district:"Solan",vibes:["offbeat","culture"],altitude:"1560m",bestTime:"Oct–Apr",famousFor:"Station on Kalka-Shimla railway, longest tunnel (Tunnel 33)",type:"offbeat",emoji:"🚂",crowd:18,color:"#e4dcc8",zone:"solan"},
+  {name:"Rajgarh",district:"Solan",vibes:["offbeat","nature"],altitude:"1400m",bestTime:"Mar–Jun, Sep–Nov",famousFor:"Peach bowl of HP, Thakur Dwar temple, scenic orchards",type:"offbeat",emoji:"🍑",crowd:12,color:"#d5e8d0",zone:"solan"},
+  // ── SIRMAUR ──
+  {name:"Churdhar Peak",district:"Sirmaur",vibes:["adventure","spiritual","offbeat"],altitude:"3647m",bestTime:"May–Jun, Sep–Oct",famousFor:"Highest outer Himalayan peak, ancient summit temple",type:"trek",emoji:"🗻",crowd:9,color:"#e0dce8",zone:"sirmaur"},
+  {name:"Renuka Ji Lake",district:"Sirmaur",vibes:["spiritual","nature"],altitude:"672m",bestTime:"Oct–Mar",famousFor:"Largest lake in HP, sacred, annual fair, zoo, wildlife",type:"temple",emoji:"🪷",crowd:38,color:"#e8d8d0",zone:"sirmaur"},
+  {name:"Paonta Sahib",district:"Sirmaur",vibes:["spiritual"],altitude:"400m",bestTime:"Oct–Mar",famousFor:"Historic Sikh gurudwara where Guru Gobind Singh stayed",type:"temple",emoji:"🛕",crowd:48,color:"#e8d8d0",zone:"sirmaur"},
+  {name:"Haripurdhar",district:"Sirmaur",vibes:["offbeat","nature"],altitude:"2100m",bestTime:"Apr–Jun, Sep–Nov",famousFor:"Remote ridge, deodar forests, Renuka Lake views, peace",type:"offbeat",emoji:"🌲",crowd:7,color:"#d4e6da",zone:"sirmaur"},
+  {name:"Nahan",district:"Sirmaur",vibes:["culture"],altitude:"932m",bestTime:"Oct–Mar",famousFor:"Rani Tal, old bazaar, circuit base for Renuka and Churdhar",type:"popular",emoji:"🏘️",crowd:30,color:"#e4dcc8",zone:"sirmaur"},
+  {name:"Shillai",district:"Sirmaur",vibes:["offbeat","nature"],altitude:"1400m",bestTime:"Oct–Apr",famousFor:"Remote area called Mini Kerala, lush green views",type:"offbeat",emoji:"🌿",crowd:8,color:"#d5e8d0",zone:"sirmaur"},
+  {name:"Suketi Fossil Park",district:"Sirmaur",vibes:["offbeat","culture"],altitude:"600m",bestTime:"Oct–Mar",famousFor:"Prehistoric Miocene era fossils, life-size dinosaur models",type:"offbeat",emoji:"🦕",crowd:15,color:"#e4dcc8",zone:"sirmaur"},
+  // ── BILASPUR ──
+  {name:"Gobind Sagar Lake",district:"Bilaspur",vibes:["nature","adventure"],altitude:"375m",bestTime:"Oct–Mar",famousFor:"Bhakra dam reservoir, water sports, migratory birds",type:"popular",emoji:"💧",crowd:34,color:"#d4dce8",zone:"bilaspur"},
+  {name:"Naina Devi Temple",district:"Bilaspur",vibes:["spiritual"],altitude:"1220m",bestTime:"Oct–Apr",famousFor:"Major Shaktipeeth on hilltop, ropeway, Gobind Sagar views",type:"temple",emoji:"🛕",crowd:55,color:"#e8d8d0",zone:"bilaspur"},
+  {name:"Bahadurpur Fort",district:"Bilaspur",vibes:["offbeat","culture"],altitude:"800m",bestTime:"Oct–Mar",famousFor:"360° view fort, trek, HP history",type:"offbeat",emoji:"🏰",crowd:10,color:"#e4dcc8",zone:"bilaspur"},
+  // ── HAMIRPUR ──
+  {name:"Sujanpur Tira",district:"Hamirpur",vibes:["culture","spiritual"],altitude:"400m",bestTime:"Oct–Mar",famousFor:"Fort complex, ancient temples, famous Holi fair, Beas riverfront",type:"popular",emoji:"🏰",crowd:28,color:"#e8d8d0",zone:"hamirpur"},
+  {name:"Deotsidh Baba Balak Nath",district:"Hamirpur",vibes:["spiritual"],altitude:"600m",bestTime:"Oct–Mar",famousFor:"Sacred cave temple, extremely popular in winters",type:"temple",emoji:"🕌",crowd:65,color:"#e4dcc8",zone:"hamirpur"},
+  {name:"Nadaun",district:"Hamirpur",vibes:["culture","offbeat"],altitude:"400m",bestTime:"Oct–Mar",famousFor:"Raja Sansar Chand's palace, Beas river, historic town",type:"offbeat",emoji:"🏛️",crowd:20,color:"#e8d8d0",zone:"hamirpur"},
+  // ── UNA ──
+  {name:"Chintpurni Temple",district:"Una",vibes:["spiritual"],altitude:"900m",bestTime:"Oct–Apr",famousFor:"Major Shakti Peetha, one of 51 sacred sites in India",type:"temple",emoji:"🛕",crowd:72,color:"#e8e0d4",zone:"una"},
+  {name:"Pong Dam",district:"Una",vibes:["nature","offbeat"],altitude:"430m",bestTime:"Nov–Feb",famousFor:"Wetland reserve, winter migratory birds, boating",type:"offbeat",emoji:"🦢",crowd:22,color:"#d4dce8",zone:"una"},
+];
+
+
+const ZONE_SEASONS = {
+  kullu:  ['snow','snow','good','good','good','warn','rain','rain','good','good','warn','snow'],
+  parvati:['snow','snow','good','good','good','warn','rain','rain','good','good','warn','snow'],
+  tirthan:['snow','snow','good','good','good','good','rain','rain','good','good','good','snow'],
+  kangra: ['dry','dry','good','good','good','warn','rain','rain','good','good','good','dry'],
+  mandi:  ['dry','dry','good','good','good','warn','rain','rain','good','good','good','dry'],
+  shimla: ['snow','snow','good','good','good','warn','rain','rain','good','good','warn','snow'],
+  spiti:  ['snow','snow','snow','snow','warn','good','good','good','good','warn','snow','snow'],
+  lahaul: ['snow','snow','snow','snow','warn','good','good','good','good','warn','snow','snow'],
+  kinnaur:['snow','snow','good','good','good','good','warn','warn','good','good','warn','snow'],
+  chamba: ['snow','snow','good','good','good','warn','rain','rain','good','good','warn','snow'],
+  solan:  ['dry','dry','good','good','good','warn','rain','rain','good','good','good','dry'],
+  sirmaur:['dry','dry','good','good','good','warn','rain','rain','good','good','good','dry'],
+  bilaspur:['dry','dry','good','good','warm','rain','rain','rain','good','good','dry','dry'],
+  hamirpur:['dry','dry','good','good','warm','rain','rain','rain','good','good','dry','dry'],
+  una:    ['dry','dry','good','good','warm','rain','rain','rain','good','good','dry','dry'],
+};
+
+const MONTH_NAMES=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// ═══════════════════════════════════════════════
+// DEFAULT SITE DATA
+// ═══════════════════════════════════════════════
+const DEF = {
+  siteName:"PahariPath",heroEyebrow:"🏔 Discover Hidden Himachal",
+  heroTitle:"Go beyond the tourist trail",
+  heroSub:"Find peaceful valleys, quiet villages, and real Pahadi experiences. Skip the crowds.",
+  aboutText:"Himachal Pradesh is far more than Manali, Shimla, and Kasol. PahariPath shows you live crowd data, suggests quiet alternatives, and connects you with real local homestays.",
+  footerTagline:"Promoting offbeat travel · Supporting local communities · Preserving Pahari culture",
+  stats:[{num:"80+",label:"Places Listed"},{num:"12",label:"Districts Covered"},{num:"4",label:"Verified Stays"},{num:"4.8★",label:"Avg Rating"}],
+  places: [
+    // Curated 25 — mix of famous + offbeat, sorted low crowd first
+    ...HP_DB.filter(p=>p.crowd<35).sort((a,b)=>a.crowd-b.crowd).slice(0,12),
+    ...HP_DB.filter(p=>p.crowd>=35&&p.crowd<60).slice(0,8),
+    ...HP_DB.filter(p=>p.crowd>=60).slice(0,5),
+  ].filter((p,i,arr)=>arr.findIndex(x=>x.name===p.name)===i).slice(0,25).map((p,i)=>({...p,id:i+1})),
+  stays:[
+    {id:1,name:"Mountain Echo Homestay",loc:"Tirthan Valley, Kullu",price:"₹1,200/night",rating:"4.8 · 42 reviews",type:"Homestay",emoji:"🏡",color:"#e1f0e8",contact:"+91 98050 12345"},
+    {id:2,name:"Barot Riverside Cottage",loc:"Barot, Mandi",price:"₹950/night",rating:"4.9 · 18 reviews",type:"Homestay",emoji:"🌿",color:"#f0e8d4",contact:"+91 94180 67890"},
+    {id:3,name:"Spiti Guesthouse",loc:"Kaza, Spiti",price:"₹800/night",rating:"4.9 · 31 reviews",type:"Guesthouse",emoji:"🏔️",color:"#dce8f0",contact:"+91 70189 11223"},
+    {id:4,name:"Pahari Village Stay",loc:"Bir, Kangra",price:"₹1,100/night",rating:"4.6 · 89 reviews",type:"Homestay",emoji:"🌾",color:"#e8e0f0",contact:"+91 88940 55678"},
+  ],
+  alternatives:[
+    {id:1,for:"Kasol",name:"Tirthan Valley",desc:"Same riverside forest vibe, 4× fewer visitors.",crowd:"22%",vibe:"Offbeat nature"},
+    {id:2,for:"Manali",name:"Barot",desc:"Pine forests, trout fishing, zero tourist chaos.",crowd:"18%",vibe:"Pahari culture"},
+    {id:3,for:"Triund Trek",name:"Kareri Lake",desc:"Equally beautiful alpine lake, almost no tourists.",crowd:"18%",vibe:"Adventure"},
+    {id:4,for:"Shimla",name:"Chail",desc:"Royal history, dense forests, Himalayan views.",crowd:"27%",vibe:"Culture & nature"},
+  ],
+  media:{},
+  crowdDisplay:'pct'
+};
+
+function gd(){
+  try{const s=localStorage.getItem('pp_data');if(!s)return JSON.parse(JSON.stringify(DEF));const d=JSON.parse(s);if(!d.media)d.media={};if(!d.crowdDisplay)d.crowdDisplay='pct';return d;}
+  catch(e){return JSON.parse(JSON.stringify(DEF));}
+}
+function sd(d){localStorage.setItem('pp_data',JSON.stringify(d));}
+function getPW(){return localStorage.getItem('pp_pw')||'paharipath2025';}
+
+// ═══════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════
+function tryLogin(){
+  const v=document.getElementById('pwInput').value;
+  if(v===getPW()){
+    localStorage.setItem('pp_sess','1');
+    document.getElementById('loginWrap').classList.add('gone');
+    initAdmin();
+  } else {
+    document.getElementById('loginErr').style.display='block';
+    document.getElementById('pwInput').value='';
+    document.getElementById('pwInput').focus();
+  }
+}
+function logout(){localStorage.removeItem('pp_sess');location.reload();}
+
+// ═══════════════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════════════
+function goTo(pg){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.sb-item').forEach(n=>n.classList.remove('on'));
+  document.getElementById('page-'+pg).classList.add('on');
+  const nav=document.getElementById('nav-'+pg);if(nav)nav.classList.add('on');
+  if(pg==='dashboard'){buildDash();}
+  if(pg==='crowd'){buildCrowd();}
+  if(pg==='places'){buildPlaces();}
+  if(pg==='forecast'){buildForecastSelects();}
+  if(pg==='stays'){buildStays();}
+  if(pg==='alternatives'){buildAlts();}
+  if(pg==='content'){loadContent();}
+}
+
+function initAdmin(){
+  buildDash();buildCrowd();buildPlaces();buildForecastSelects();buildStays();buildAlts();loadContent();
+  // set today as default date
+  const today=new Date().toISOString().split('T')[0];
+  document.getElementById('fc-date').value=today;
+}
+
+// ═══════════════════════════════════════════════
+// CROWD DISPLAY TOGGLE
+// ═══════════════════════════════════════════════
+let crowdDisplay='pct';
+function setCrowdDisplay(mode){
+  crowdDisplay=mode;
+  const d=gd();d.crowdDisplay=mode;sd(d);
+  document.getElementById('ct-pct').classList.toggle('on',mode==='pct');
+  document.getElementById('ct-color').classList.toggle('on',mode==='color');
+  buildDashCrowdList();
+}
+
+function crowdBadgeHTML(c, mode){
+  const cls=c>=70?'badge-high':c>=45?'badge-med':'badge-low';
+  const label=c>=70?'Very Crowded':c>=45?'Moderate':'Less Crowded';
+  const color=c>=70?'#e24a4a':c>=45?'#e8a020':'#3aab66';
+  if(mode==='color'){
+    return`<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:50%;background:${color};flex-shrink:0"></span><span class="badge ${cls}">${label}</span></span>`;
+  }
+  return`<span class="badge ${cls}">${c}% · ${label}</span>`;
+}
+
+// ═══════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════
+function buildDash(){
+  const d=gd();
+  crowdDisplay=d.crowdDisplay||'pct';
+  document.getElementById('ct-pct').classList.toggle('on',crowdDisplay==='pct');
+  document.getElementById('ct-color').classList.toggle('on',crowdDisplay==='color');
+  const mCount=Object.values(d.media||{}).reduce((s,m)=>(s+(m.images||[]).length+(m.videos||[]).length),0);
+  document.getElementById('dash-stats').innerHTML=[
+    {n:d.places.length,l:'Places on Site'},{n:d.stays.length,l:'Stays Listed'},
+    {n:d.places.filter(p=>p.crowd<40).length,l:'Low Crowd Now'},{n:mCount,l:'Media Files'},
+  ].map(s=>`<div class="stat-card"><div class="sc-num">${s.n}</div><div class="sc-lbl">${s.l}</div></div>`).join('');
+  buildDashCrowdList();
+}
+
+function buildDashCrowdList(){
+  const d=gd();
+  const sorted=[...d.places].sort((a,b)=>a.crowd-b.crowd);
+  document.getElementById('dash-crowd-list').innerHTML=
+    '<div class="item-list">'+sorted.map(p=>`
+      <div class="item-card">
+        <div class="ic-emoji">${p.emoji}</div>
+        <div class="ic-info"><div class="ic-name">${p.name}</div><div class="ic-sub">${p.district}</div></div>
+        ${crowdBadgeHTML(p.crowd, crowdDisplay)}
+      </div>`).join('')+'</div>';
+}
+
+// ═══════════════════════════════════════════════
+// CROWD UPDATE
+// ═══════════════════════════════════════════════
+function buildCrowd(){
+  const d=gd();
+  const bc=c=>c>=70?'bar-high':c>=45?'bar-med':'bar-low';
+  document.getElementById('crowd-grid').innerHTML=d.places.map(p=>`
+    <div class="crowd-card">
+      <div class="cc-name">${p.emoji} ${p.name}</div>
+      <div class="cc-dist">${p.district}</div>
+      <div class="cc-bar-bg"><div class="cc-bar-fill ${bc(p.crowd)}" id="cbar-${p.id}" style="width:${p.crowd}%"></div></div>
+      <div style="font-size:12px;color:var(--stone);margin-bottom:8px">Current: <strong id="clbl-${p.id}">${p.crowd}%</strong></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <input type="range" style="flex:1;accent-color:var(--pine)" id="csl-${p.id}" min="0" max="100" value="${p.crowd}" oninput="previewCrowd(${p.id},this.value)"/>
+        <span style="font-size:12px;font-weight:600;color:var(--pine);min-width:34px" id="cval-${p.id}">${p.crowd}%</span>
+      </div>
+    </div>`).join('');
+}
+function previewCrowd(id,v){
+  document.getElementById('clbl-'+id).textContent=v+'%';
+  document.getElementById('cval-'+id).textContent=v+'%';
+  const bar=document.getElementById('cbar-'+id);
+  bar.style.width=v+'%';bar.className='cc-bar-fill '+(v>=70?'bar-high':v>=45?'bar-med':'bar-low');
+}
+function saveCrowd(){
+  const d=gd();
+  d.places.forEach(p=>{const el=document.getElementById('csl-'+p.id);if(el)p.crowd=parseInt(el.value);});
+  sd(d);showOk('crowd-ok');buildDash();
+}
+
+// ═══════════════════════════════════════════════
+// DB SEARCH + AUTOFILL
+// ═══════════════════════════════════════════════
+function searchDB(q){
+  const box=document.getElementById('db-results');
+  if(!q||q.length<2){box.classList.remove('open');return;}
+  const matches=HP_DB.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())||p.district.toLowerCase().includes(q.toLowerCase())).slice(0,12);
+  if(!matches.length){box.classList.remove('open');return;}
+  box.innerHTML=matches.map(p=>`
+    <div class="db-item" onclick="autofill(${JSON.stringify(p).replace(/"/g,'&quot;')})">
+      <div class="db-item-name">${p.emoji} ${p.name}<span class="db-badge">${p.type}</span></div>
+      <div class="db-item-meta">${p.district} · ${p.altitude} · Best: ${p.bestTime}</div>
+    </div>`).join('');
+  box.classList.add('open');
+}
+
+function autofill(p){
+  // fill all fields
+  document.getElementById('np-name').value=p.name;
+  document.getElementById('np-dist').value=p.district;
+  document.getElementById('np-emoji').value=p.emoji;
+  document.getElementById('np-alt').value=p.altitude||'';
+  document.getElementById('np-best').value=p.bestTime||'';
+  document.getElementById('np-famous').value=p.famousFor||'';
+  document.getElementById('np-vibes').value=(p.vibes||[]).join(', ');
+  document.getElementById('np-crowd').value=p.crowd||35;
+  document.getElementById('np-cv').textContent=p.crowd||35;
+  document.getElementById('np-region').value=p.type||'offbeat';
+  // auto generate description
+  const desc=generateDesc(p);
+  document.getElementById('np-desc').value=desc;
+  // show status
+  const status=document.getElementById('autofill-status');
+  status.classList.add('show');
+  document.getElementById('af-tags').innerHTML=[
+    p.district,p.altitude,p.type,`Crowd: ${p.crowd}%`
+  ].map(t=>`<span class="af-tag">${t}</span>`).join('');
+  // close dropdown
+  document.getElementById('db-results').classList.remove('open');
+  document.getElementById('place-search').value=p.name;
+}
+
+function generateDesc(p){
+  const templates={
+    offbeat:`${p.name} is one of those Himachali gems that barely shows up on tourist maps. Tucked in ${p.district} district at ${p.altitude}, it offers ${p.famousFor||'untouched nature and Pahari culture'} without the crowds. Best visited ${p.bestTime}.`,
+    popular:`${p.name} in ${p.district} sits at ${p.altitude} and is one of Himachal's well-known destinations. Famous for ${p.famousFor||'its scenic beauty'}. Gets busy in peak season — plan your visit for ${p.bestTime} for the best experience.`,
+    trek:`${p.name} is a rewarding trek destination in ${p.district} at ${p.altitude}. Known for ${p.famousFor||'spectacular Himalayan scenery'}. Best trekking window is ${p.bestTime}.`,
+    temple:`${p.name} in ${p.district} is a significant spiritual site at ${p.altitude}. Revered for ${p.famousFor||'its ancient history and religious importance'}. A peaceful visit is possible ${p.bestTime}.`,
+    village:`${p.name} is a traditional Pahari village in ${p.district} at ${p.altitude}. Here you'll find ${p.famousFor||'authentic Himachali life'} away from tourist crowds. Best time to visit is ${p.bestTime}.`,
+  };
+  return (templates[p.type]||templates.offbeat);
+}
+
+// Close dropdown on outside click
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.db-search'))document.getElementById('db-results').classList.remove('open');
+});
+
+// ═══════════════════════════════════════════════
+// PLACES MANAGEMENT
+// ═══════════════════════════════════════════════
+function buildPlaces(){
+  const d=gd();
+  document.getElementById('places-count').textContent=`(${d.places.length} places)`;
+  const cl=c=>c>=70?'badge-high':c>=45?'badge-med':'badge-low';
+  const ct=c=>c>=70?'Very Crowded':c>=45?'Moderate':'Less Crowded';
+  let html='<div class="item-list">';
+  d.places.forEach(p=>{
+    const pm=(d.media||{})[p.id]||{images:[],videos:[]};
+    const imgs=pm.images||[],vids=pm.videos||[];
+    html+=`
+    <div style="border:1px solid rgba(74,124,95,.12);border-radius:11px;overflow:hidden;background:#fff;margin-bottom:4px">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 16px">
+        <div style="font-size:22px">${p.emoji}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:500">${p.name}</div>
+          <div style="font-size:12px;color:var(--stone);margin-top:2px">${p.district} · ${(p.vibes||[]).join(', ')}</div>
+          <div style="font-size:11px;color:var(--sage);margin-top:3px">🖼 ${imgs.length} photo${imgs.length!==1?'s':''} &nbsp; 🎬 ${vids.length} video${vids.length!==1?'s':''}</div>
+        </div>
+        <span class="badge ${cl(p.crowd)}">${p.crowd}% · ${ct(p.crowd)}</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-edit btn-sm" onclick="toggleMedia(${p.id})">📷 Media</button>
+          <button class="btn btn-danger btn-sm" onclick="delPlace(${p.id})">Delete</button>
+        </div>
+      </div>
+      <!-- MEDIA PANEL -->
+      <div class="media-panel" id="mp-${p.id}">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <span style="font-size:13px;font-weight:600;color:var(--pine)">📷 Media for ${p.name}</span>
+          <button class="btn btn-outline btn-sm" onclick="toggleMedia(${p.id})">Done ✓</button>
+        </div>
+        <div class="mp-section">Photos — Upload from your device or paste a URL</div>
+        <!-- FILE UPLOAD -->
+        <div class="upload-zone" onclick="document.getElementById('fu-${p.id}').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event,${p.id})">
+          <input type="file" id="fu-${p.id}" accept="image/*" multiple onchange="handleFileUpload(this,${p.id})"/>
+          <div class="upload-zone-icon">📸</div>
+          <div class="upload-zone-txt"><strong>Click to upload photos</strong> or drag & drop<br><span style="font-size:11px">JPG, PNG, WEBP — any size</span></div>
+        </div>
+        <div style="text-align:center;font-size:12px;color:var(--stone);margin:8px 0">— or paste image URL below —</div>
+        <div class="media-add-row">
+          <input class="fi" id="imginp-${p.id}" placeholder="https://example.com/photo.jpg"/>
+          <button class="btn btn-primary btn-sm" onclick="addImg(${p.id})">Add URL</button>
+        </div>
+        <div id="imglist-${p.id}" style="margin-top:10px"></div>
+        <div class="mp-section" style="margin-top:16px">YouTube Videos</div>
+        <div style="font-size:12px;color:var(--stone);margin-bottom:8px">Paste YouTube link — embeds directly on the place page</div>
+        <div class="media-add-row">
+          <input class="fi" id="vidinp-${p.id}" placeholder="https://youtube.com/watch?v=..."/>
+          <button class="btn btn-primary btn-sm" onclick="addVid(${p.id})">Add Video</button>
+        </div>
+        <div id="vidlist-${p.id}" style="margin-top:10px"></div>
+      </div>
+    </div>`;
+  });
+  html+='</div>';
+  document.getElementById('places-list').innerHTML=html;
+  d.places.forEach(p=>refreshMediaLists(p.id));
+}
+
+function addPlace(){
+  const name=document.getElementById('np-name').value.trim();
+  if(!name){alert('Place name is required.');return;}
+  const d=gd();
+  if(d.places.find(p=>p.name.toLowerCase()===name.toLowerCase())){
+    if(!confirm(`${name} already exists. Add again anyway?`))return;
+  }
+  d.places.push({
+    id:Date.now(),name,
+    district:document.getElementById('np-dist').value.trim()||'Himachal Pradesh',
+    desc:document.getElementById('np-desc').value.trim()||generateDesc({name,district:document.getElementById('np-dist').value.trim(),altitude:document.getElementById('np-alt').value.trim(),famousFor:document.getElementById('np-famous').value.trim(),bestTime:document.getElementById('np-best').value.trim(),type:document.getElementById('np-region').value}),
+    emoji:document.getElementById('np-emoji').value.trim()||'🏔️',
+    bestTime:document.getElementById('np-best').value.trim(),
+    altitude:document.getElementById('np-alt').value.trim(),
+    famousFor:document.getElementById('np-famous').value.trim(),
+    crowd:parseInt(document.getElementById('np-crowd').value)||35,
+    vibes:document.getElementById('np-vibes').value.split(',').map(v=>v.trim()).filter(Boolean),
+    color:document.getElementById('np-color').value||'#d4e6da',
+    type:document.getElementById('np-region').value
+  });
+  sd(d);
+  ['np-name','np-dist','np-desc','np-emoji','np-best','np-alt','np-famous','np-vibes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('np-crowd').value=35;document.getElementById('np-cv').textContent='35';
+  document.getElementById('autofill-status').classList.remove('show');
+  document.getElementById('place-search').value='';
+  buildPlaces();buildDash();buildForecastSelects();showOk('places-ok');
+}
+
+function delPlace(id){
+  if(!confirm('Delete this place?'))return;
+  const d=gd();d.places=d.places.filter(p=>p.id!==id);sd(d);
+  buildPlaces();buildDash();buildForecastSelects();showOk('places-ok');
+}
+
+// ═══════════════════════════════════════════════
+// MEDIA — FILE UPLOAD (converts to base64)
+// ═══════════════════════════════════════════════
+function handleFileUpload(input,pid){
+  const files=Array.from(input.files);
+  files.forEach(file=>{
+    if(!file.type.startsWith('image/')){alert('Only image files allowed.');return;}
+    if(file.size>5*1024*1024){alert(`${file.name} is too large. Max 5MB per image.`);return;}
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const d=gd();
+      if(!d.media)d.media={};
+      if(!d.media[pid])d.media[pid]={images:[],videos:[]};
+      d.media[pid].images.push(e.target.result);
+      sd(d);refreshMediaLists(pid);buildPlaces();buildDash();showOk('places-ok');
+      setTimeout(()=>{const mp=document.getElementById('mp-'+pid);if(mp){mp.classList.add('open');refreshMediaLists(pid);}},100);
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value='';
+}
+
+function handleDrop(event,pid){
+  event.preventDefault();
+  event.currentTarget.classList.remove('drag');
+  const files=Array.from(event.dataTransfer.files);
+  files.forEach(file=>{
+    if(!file.type.startsWith('image/'))return;
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const d=gd();
+      if(!d.media)d.media={};
+      if(!d.media[pid])d.media[pid]={images:[],videos:[]};
+      d.media[pid].images.push(e.target.result);
+      sd(d);refreshMediaLists(pid);buildPlaces();buildDash();showOk('places-ok');
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function addImg(pid){
+  const inp=document.getElementById('imginp-'+pid);
+  const url=inp.value.trim();
+  if(!url){alert('Paste an image URL.');return;}
+  if(!url.startsWith('http')){alert('URL must start with https://');return;}
+  const d=gd();
+  if(!d.media)d.media={};if(!d.media[pid])d.media[pid]={images:[],videos:[]};
+  d.media[pid].images.push(url);
+  sd(d);inp.value='';
+  buildPlaces();buildDash();showOk('places-ok');
+  setTimeout(()=>{const mp=document.getElementById('mp-'+pid);if(mp){mp.classList.add('open');refreshMediaLists(pid);}},100);
+}
+function removeImg(pid,idx){
+  const d=gd();if(d.media&&d.media[pid])d.media[pid].images.splice(idx,1);
+  sd(d);buildPlaces();
+  setTimeout(()=>{const mp=document.getElementById('mp-'+pid);if(mp){mp.classList.add('open');refreshMediaLists(pid);}},100);
+}
+function addVid(pid){
+  const inp=document.getElementById('vidinp-'+pid);
+  const url=inp.value.trim();
+  if(!url){alert('Paste a YouTube URL.');return;}
+  if(!url.includes('youtube')&&!url.includes('youtu.be')){alert('Only YouTube links supported.');return;}
+  const d=gd();
+  if(!d.media)d.media={};if(!d.media[pid])d.media[pid]={images:[],videos:[]};
+  d.media[pid].videos.push(url);
+  sd(d);inp.value='';
+  buildPlaces();buildDash();showOk('places-ok');
+  setTimeout(()=>{const mp=document.getElementById('mp-'+pid);if(mp){mp.classList.add('open');refreshMediaLists(pid);}},100);
+}
+function removeVid(pid,idx){
+  const d=gd();if(d.media&&d.media[pid])d.media[pid].videos.splice(idx,1);
+  sd(d);buildPlaces();
+  setTimeout(()=>{const mp=document.getElementById('mp-'+pid);if(mp){mp.classList.add('open');refreshMediaLists(pid);}},100);
+}
+
+function toggleMedia(pid){
+  const panel=document.getElementById('mp-'+pid);
+  const isOpen=panel.classList.contains('open');
+  document.querySelectorAll('.media-panel.open').forEach(p=>p.classList.remove('open'));
+  if(!isOpen){panel.classList.add('open');refreshMediaLists(pid);panel.scrollIntoView({behavior:'smooth',block:'nearest'});}
+}
+
+function refreshMediaLists(pid){
+  const imgList=document.getElementById('imglist-'+pid);
+  const vidList=document.getElementById('vidlist-'+pid);
+  if(!imgList||!vidList)return;
+  const d=gd();const pm=(d.media||{})[pid]||{images:[],videos:[]};
+  imgList.innerHTML=(pm.images||[]).length
+    ?(pm.images.map((src,i)=>`
+        <div class="media-item">
+          <img class="media-thumb" src="${src}" onerror="this.style.display='none'"/>
+          <span class="media-url">${src.startsWith('data:')?' Uploaded photo ('+Math.round(src.length/1024)+'KB)':src}</span>
+          <button class="btn btn-danger btn-sm" onclick="removeImg(${pid},${i})">✕</button>
+        </div>`).join(''))
+    :'<div style="font-size:12px;color:var(--stone);padding:8px 0">No photos yet</div>';
+  vidList.innerHTML=(pm.videos||[]).length
+    ?(pm.videos.map((url,i)=>`
+        <div class="media-item">
+          <span style="font-size:18px">🎬</span>
+          <span class="media-url">${url}</span>
+          <button class="btn btn-danger btn-sm" onclick="removeVid(${pid},${i})">✕</button>
+        </div>`).join(''))
+    :'<div style="font-size:12px;color:var(--stone);padding:8px 0">No videos yet</div>';
+}
+
+// ═══════════════════════════════════════════════
+// DATE FORECAST ENGINE
+// ═══════════════════════════════════════════════
+function buildForecastSelects(){
+  const d=gd();
+  const sel=document.getElementById('fc-place');
+  const current=sel.value;
+  sel.innerHTML='<option value="">-- Select a place --</option>';
+  d.places.forEach(p=>{
+    const opt=document.createElement('option');
+    opt.value=p.id;opt.textContent=`${p.emoji} ${p.name} (${p.district})`;
+    if(p.id==current)opt.selected=true;
+    sel.appendChild(opt);
+  });
+}
+
+function runForecast(){
+  const pid=document.getElementById('fc-place').value;
+  const dateStr=document.getElementById('fc-date').value;
+  if(!pid||!dateStr)return;
+  const d=gd();
+  const place=d.places.find(p=>p.id==pid);
+  if(!place)return;
+  const date=new Date(dateStr);
+  const month=date.getMonth(); // 0-11
+  const day=date.getDay(); // 0=Sun
+  const zone=(place.zone||'kullu');
+  const seasons=ZONE_SEASONS[zone]||ZONE_SEASONS.kullu;
+  const monthCond=seasons[month];
+  const days=parseInt(document.getElementById('fc-days').value)||2;
+
+  // CROWD FORECAST
+  const dayMult=[1.3,1,0.95,0.95,0.97,1.15,1.5]; // Sun,Mon...Sat
+  const monthCrowdMult={good:1,warn:1.3,rain:0.7,snow:0.3,dry:0.9};
+  const baseCrowd=place.crowd;
+  const forecastCrowd=Math.min(98,Math.round(baseCrowd*dayMult[day]*(monthCrowdMult[monthCond]||1)));
+
+  // WEATHER
+  const weatherMap={
+    good:{icon:'☀️',label:'Clear & Pleasant',color:'good',temp:getTempRange(place,month)},
+    warn:{icon:'🌤',label:'Warm & Busy Season',color:'warn',temp:getTempRange(place,month)},
+    rain:{icon:'🌧',label:'Monsoon — Heavy Rain',color:'danger',temp:getTempRange(place,month)},
+    snow:{icon:'❄️',label:'Snow / Road Closed',color:'warn',temp:getTempRange(place,month)},
+    dry:{icon:'🌥',label:'Cool & Dry',color:'good',temp:getTempRange(place,month)},
+  };
+  const weather=weatherMap[monthCond]||weatherMap.good;
+
+  // LANDSLIDE RISK
+  let landslide={icon:'✅',label:'Low Risk',color:'good',detail:'Roads generally stable'};
+  if(monthCond==='rain'){
+    landslide={icon:'⚠️',label:'HIGH RISK',color:'danger',detail:'Monsoon season — landslides common in HP. Avoid NH3, NH21 after rain.'};
+  } else if(monthCond==='warn'&&[5,8].includes(month)){
+    landslide={icon:'🟡',label:'Moderate Risk',color:'warn',detail:'Pre/post monsoon — check road conditions before travel'};
+  }
+
+  // SNOWFALL FORECAST
+  let snowfall={icon:'🌿',label:'No Snow',color:'good',detail:'Snow-free at this altitude'};
+  const alt=parseInt((place.altitude||'1500m').replace(/[^0-9]/g,''))||1500;
+  if(monthCond==='snow'){
+    snowfall={icon:'❄️',label:'Snow Likely',color:'warn',detail:`At ${place.altitude}, expect snowfall. Roads may be closed. Check HRTC advisories.`};
+    if(alt>3000)snowfall={icon:'🌨',label:'Heavy Snow',color:'danger',detail:`At ${place.altitude}, heavy snow expected. Routes likely blocked. Do NOT travel without local advice.`};
+  } else if(alt>3500&&[10,11,0,1,2,3].includes(month)){
+    snowfall={icon:'❄️',label:'Snow Likely',color:'warn',detail:`High altitude (${place.altitude}) — winter snow. Verify road access.`};
+  } else if(alt>2500&&[11,0,1,2].includes(month)){
+    snowfall={icon:'🌨',label:'Possible Snow',color:'warn',detail:`At ${place.altitude}, light snowfall possible in peak winter.`};
+  }
+
+  // OVERALL ADVICE
+  const crowdLabel=forecastCrowd>=70?'very crowded':forecastCrowd>=45?'moderately busy':'peaceful and quiet';
+  let overallColor='good',overallAdvice='';
+  if(monthCond==='rain'||landslide.color==='danger'){
+    overallColor='danger';
+    overallAdvice=`⚠️ NOT RECOMMENDED for ${place.name} during this period. Monsoon (Jul–Sep) brings heavy rain, landslide risk, and blocked roads in HP. If you must go, travel only in mornings, avoid driving after rain, and keep emergency contacts handy. Consider postponing to October.`;
+  } else if(monthCond==='snow'&&alt>3000){
+    overallColor='danger';
+    overallAdvice=`🚫 Road access to ${place.name} (${place.altitude}) is likely BLOCKED due to snow. This place is typically accessible only ${place.bestTime}. Do not attempt without local verification.`;
+  } else if(monthCond==='good'&&forecastCrowd<50){
+    overallColor='good';
+    overallAdvice=`✅ Great time to visit ${place.name}! Expect a ${crowdLabel} experience. Weather is clear and roads are good. ${day===0||day===6?'Weekend — slightly more visitors than weekdays.':'Weekday — even quieter.'} Carry light layers as mountain mornings can be cool.`;
+  } else if(forecastCrowd>=70){
+    overallColor='warn';
+    overallAdvice=`🟡 ${place.name} will be ${crowdLabel} on this date. Consider going early morning (before 9am) or on a weekday. Accommodation books fast — reserve in advance. Weather is ${weather.label.toLowerCase()}.`;
+  } else {
+    overallColor='good';
+    overallAdvice=`✅ Reasonable time to visit ${place.name}. Expect ${crowdLabel} conditions. Weather: ${weather.label}. ${place.bestTime?`Ideal months are ${place.bestTime}.`:''}`;
+  }
+
+  // RENDER
+  document.getElementById('fp-title').textContent=`Forecast for ${place.emoji} ${place.name} — ${date.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}`;
+  document.getElementById('fp-grid').innerHTML=[
+    {icon:'👥',label:'Crowd',color:forecastCrowd>=70?'danger':forecastCrowd>=45?'warn':'good',val:`${forecastCrowd}%`,sub:forecastCrowd>=70?'Very Crowded':forecastCrowd>=45?'Moderate':'Less Crowded'},
+    {icon:weather.icon,label:'Weather',color:weather.color,val:weather.label,sub:weather.temp},
+    {icon:snowfall.icon,label:'Snowfall',color:snowfall.color,val:snowfall.label,sub:snowfall.detail},
+    {icon:landslide.icon,label:'Landslide Risk',color:landslide.color,val:landslide.label,sub:landslide.detail},
+    {icon:'📅',label:'Trip Duration',color:'good',val:`${days} day${days!==1?'s':''}`,sub:`${date.toLocaleDateString('en-IN',{day:'numeric',month:'short'})} onwards`},
+    {icon:'🗺',label:'Best Months',color:'good',val:place.bestTime||'Year round',sub:`Altitude: ${place.altitude||'unknown'}`},
+  ].map(c=>`
+    <div class="fp-card fp-card-${c.color}">
+      <div class="fp-icon">${c.icon}</div>
+      <div class="fp-label" style="color:${c.color==='good'?'#1e6b3c':c.color==='warn'?'#9b6c1a':'#9b2020'}">${c.label}</div>
+      <div class="fp-value" style="font-weight:600;margin-bottom:4px">${c.val}</div>
+      <div style="font-size:11px;color:${c.color==='good'?'#2d7a4a':c.color==='warn'?'#7a4f0c':'#8b1a1a'}">${c.sub}</div>
+    </div>`).join('');
+  document.getElementById('fp-advice').innerHTML=`<div class="fp-advice fp-advice-${overallColor}">${overallAdvice}</div>`;
+
+  // SEASON BAR
+  document.getElementById('fp-place-name').textContent=place.name;
+  const colorMap={good:'s-good',warn:'s-warm',rain:'s-rain',snow:'s-snow',dry:'s-dry'};
+  document.getElementById('season-bar').innerHTML=seasons.map((s,i)=>`
+    <div class="season-cell ${colorMap[s]||'s-good'}" style="${i===month?'outline:2px solid #1c2420;outline-offset:1px':''}" title="${MONTH_NAMES[i]}: ${s}">${MONTH_NAMES[i].slice(0,1)}</div>
+  `).join('');
+
+  document.getElementById('forecast-result').classList.add('show');
+}
+
+function getTempRange(place,month){
+  const alt=parseInt((place.altitude||'1500m').replace(/[^0-9]/g,''))||1500;
+  // rough temp ranges by altitude + month
+  const baseTemp=28-(alt/200);
+  const seasonal=[0,-2,4,9,13,16,17,16,12,8,3,-1];
+  const avg=Math.round(baseTemp+seasonal[month]);
+  const min=avg-8,max=avg+6;
+  return`${min}°C – ${max}°C approx`;
+}
+
+// ═══════════════════════════════════════════════
+// STAYS
+// ═══════════════════════════════════════════════
+function buildStays(){
+  const d=gd();
+  document.getElementById('stays-list').innerHTML='<div class="item-list">'+d.stays.map(s=>`
+    <div class="item-card">
+      <div class="ic-emoji">${s.emoji}</div>
+      <div class="ic-info"><div class="ic-name">${s.name}</div><div class="ic-sub">${s.loc} · ${s.price} · ${s.type}</div></div>
+      <div class="ic-actions"><button class="btn btn-danger btn-sm" onclick="delStay(${s.id})">Delete</button></div>
+    </div>`).join('')+'</div>';
+}
+function addStay(){
+  const name=document.getElementById('ns-name').value.trim();if(!name){alert('Name required.');return;}
+  const d=gd();
+  d.stays.push({id:Date.now(),name,loc:document.getElementById('ns-loc').value.trim(),type:document.getElementById('ns-type').value,price:document.getElementById('ns-price').value.trim()||'₹1,000/night',rating:document.getElementById('ns-rating').value.trim()||'4.5',contact:document.getElementById('ns-wa').value.trim(),emoji:document.getElementById('ns-emoji').value.trim()||'🏡',color:document.getElementById('ns-color').value||'#e1f0e8'});
+  sd(d);['ns-name','ns-loc','ns-price','ns-rating','ns-wa','ns-emoji'].forEach(id=>document.getElementById(id).value='');
+  tog('add-stay-form');buildStays();buildDash();showOk('stays-ok');
+}
+function delStay(id){if(!confirm('Delete?'))return;const d=gd();d.stays=d.stays.filter(s=>s.id!==id);sd(d);buildStays();buildDash();showOk('stays-ok');}
+
+// ═══════════════════════════════════════════════
+// ALTERNATIVES
+// ═══════════════════════════════════════════════
+function buildAlts(){
+  const d=gd();
+  document.getElementById('alts-list').innerHTML='<div class="item-list">'+d.alternatives.map(a=>`
+    <div class="item-card">
+      <div class="ic-emoji">🔀</div>
+      <div class="ic-info"><div class="ic-name">Instead of ${a.for} → ${a.name}</div><div class="ic-sub">${a.desc}</div></div>
+      <span class="badge badge-low">${a.crowd}</span>
+      <div class="ic-actions"><button class="btn btn-danger btn-sm" onclick="delAlt(${a.id})">Delete</button></div>
+    </div>`).join('')+'</div>';
+}
+function addAlt(){
+  const name=document.getElementById('na-name').value.trim();if(!name){alert('Name required.');return;}
+  const d=gd();
+  d.alternatives.push({id:Date.now(),for:document.getElementById('na-for').value.trim(),name,desc:document.getElementById('na-desc').value.trim(),crowd:document.getElementById('na-crowd').value.trim()||'25%',vibe:document.getElementById('na-vibe').value.trim()});
+  sd(d);['na-for','na-name','na-desc','na-crowd','na-vibe'].forEach(id=>document.getElementById(id).value='');
+  tog('add-alt-form');buildAlts();showOk('alts-ok');
+}
+function delAlt(id){if(!confirm('Delete?'))return;const d=gd();d.alternatives=d.alternatives.filter(a=>a.id!==id);sd(d);buildAlts();showOk('alts-ok');}
+
+// ═══════════════════════════════════════════════
+// CONTENT
+// ═══════════════════════════════════════════════
+function loadContent(){
+  const d=gd();
+  document.getElementById('c-name').value=d.siteName||'';
+  document.getElementById('c-eyebrow').value=d.heroEyebrow||'';
+  document.getElementById('c-title').value=d.heroTitle||'';
+  document.getElementById('c-sub').value=d.heroSub||'';
+  document.getElementById('c-stats').value=(d.stats||[]).map(s=>s.num+' | '+s.label).join('\n');
+  document.getElementById('c-about').value=d.aboutText||'';
+  document.getElementById('c-footer').value=d.footerTagline||'';
+}
+function saveContent(){
+  const d=gd();
+  d.siteName=document.getElementById('c-name').value;d.heroEyebrow=document.getElementById('c-eyebrow').value;
+  d.heroTitle=document.getElementById('c-title').value;d.heroSub=document.getElementById('c-sub').value;
+  d.aboutText=document.getElementById('c-about').value;d.footerTagline=document.getElementById('c-footer').value;
+  d.stats=document.getElementById('c-stats').value.trim().split('\n').filter(Boolean).map(line=>{const[num,...rest]=line.split('|');return{num:num.trim(),label:rest.join('|').trim()};});
+  sd(d);showOk('content-ok');
+}
+
+// ═══════════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════════
+function changePW(){
+  const cur=document.getElementById('s-cur').value,nw=document.getElementById('s-new').value,con=document.getElementById('s-con').value;
+  const err=document.getElementById('pw-err');err.style.display='none';
+  if(cur!==getPW()){err.textContent='Current password wrong.';err.style.display='block';return;}
+  if(nw.length<8){err.textContent='Min 8 characters.';err.style.display='block';return;}
+  if(nw!==con){err.textContent='Passwords do not match.';err.style.display='block';return;}
+  localStorage.setItem('pp_pw',nw);['s-cur','s-new','s-con'].forEach(id=>document.getElementById(id).value='');showOk('settings-ok');
+}
+function exportD(){const blob=new Blob([JSON.stringify(gd(),null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='paharipath-backup-'+new Date().toISOString().split('T')[0]+'.json';a.click();}
+function importD(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{try{sd(JSON.parse(e.target.result));initAdmin();alert('Imported!');}catch(err){alert('Invalid file.');}};reader.readAsText(file);}
+function resetD(){if(!confirm('Reset to defaults?'))return;localStorage.removeItem('pp_data');initAdmin();alert('Done.');}
+
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+function tog(id){document.getElementById(id).classList.toggle('open');}
+function pickC(cid,fid,el){document.querySelectorAll('#'+cid+' .cswatch').forEach(s=>s.classList.remove('on'));el.classList.add('on');document.getElementById(fid).value=el.dataset.c;}
+function showOk(id){const el=document.getElementById(id);el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3500);}
+
+// ═══════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('loginBtn').addEventListener('click',tryLogin);
+  document.getElementById('pwInput').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin();});
+  if(localStorage.getItem('pp_sess')==='1'){
+    document.getElementById('loginWrap').classList.add('gone');
+    initAdmin();
+  }
+});
+</script>
+</body>
+</html>
